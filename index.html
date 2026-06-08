@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Inspiration Library</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --star: #f59e0b;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,.15);
+    --gap: 16px;
+    --cols: 4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250,250,250,.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  .brand { display: flex; flex-direction: column; }
+  .brand h1 { font-size: 17px; font-weight: 650; margin: 0; letter-spacing: -.01em; }
+  .brand .count { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .spacer { flex: 1; }
+
+  .control { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .control label { white-space: nowrap; }
+  input[type="range"] { width: 120px; accent-color: var(--accent); cursor: pointer; }
+
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .seg button {
+    border: 0;
+    background: transparent;
+    padding: 7px 13px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 7px 28px 7px 11px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%236b7280' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    max-width: 200px;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  .reset {
+    border: 0; background: transparent; color: var(--accent);
+    font-size: 13px; cursor: pointer; font-family: inherit; padding: 6px 4px;
+  }
+  .reset:hover { text-decoration: underline; }
+
+  /* Masonry via CSS columns */
+  .gallery {
+    column-count: var(--cols);
+    column-gap: var(--gap);
+    padding: var(--gap);
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  .card {
+    break-inside: avoid;
+    margin-bottom: var(--gap);
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    cursor: zoom-in;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .card img { display: block; width: 100%; height: auto; }
+  .card.hidden { display: none; }
+
+  .card .caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 18px 10px 8px;
+    background: linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,0));
+    color: #fff;
+    opacity: 0;
+    transition: opacity .15s ease;
+    pointer-events: none;
+  }
+  .card:hover .caption { opacity: 1; }
+  .card .caption .b { font-size: 13px; font-weight: 600; letter-spacing: -.01em; }
+  .card .caption .c { font-size: 11px; opacity: .82; margin-top: 1px; }
+
+  .card .star {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255,255,255,.9);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .15s ease, transform .1s ease;
+  }
+  .card:hover .star { opacity: 1; }
+  .card .star:hover { transform: scale(1.1); }
+  .card .star.starred { opacity: 1; color: var(--star); }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(15,15,20,.92);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 86vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .lb-btn {
+    position: absolute;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s ease;
+  }
+  .lb-btn:hover { background: rgba(255,255,255,.25); }
+  .lb-prev { left: 24px; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 24px; top: 50%; transform: translateY(-50%); }
+  .lb-close { top: 20px; right: 24px; }
+  .lb-bar {
+    position: absolute;
+    bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 12px; align-items: center;
+  }
+  .lb-bar a, .lb-bar button {
+    text-decoration: none;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .lb-bar a:hover, .lb-bar button:hover { background: rgba(255,255,255,.25); }
+  .lb-bar .pos { background: none; border: 0; color: rgba(255,255,255,.7); cursor: default; }
+  .lb-bar button.starred { color: var(--star); }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 80px 20px;
+    font-size: 15px;
+  }
+
+  @media (max-width: 640px) {
+    .gallery { column-count: 2 !important; }
+    .control.density { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <h1>Creative Inspiration Library</h1>
+      <div class="count" id="count"></div>
+    </div>
+    <select id="fCategory" title="Filter by category"></select>
+    <select id="fBrand" title="Filter by brand"></select>
+    <div class="seg" id="fFormat">
+      <button data-format="all" class="active">All</button>
+      <button data-format="Story (Vertical)">Story</button>
+      <button data-format="Square">Square</button>
+    </div>
+    <button class="reset" id="resetFilters" style="display:none">Reset</button>
+    <div class="spacer"></div>
+    <div class="seg" id="viewToggle">
+      <button data-view="all" class="active">All</button>
+      <button data-view="fav">★ Favorites</button>
+    </div>
+    <div class="control density">
+      <label for="cols">Columns</label>
+      <input type="range" id="cols" min="2" max="7" value="4" step="1">
+    </div>
+  </div>
+</header>
+
+<main class="gallery" id="gallery"></main>
+<div class="empty" id="empty" style="display:none">No favorites yet — hover an image and click the ★ to save it here.</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-btn lb-close" id="lbClose" title="Close (Esc)">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" title="Previous (←)">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-btn lb-next" id="lbNext" title="Next (→)">›</button>
+  <div class="lb-bar">
+    <span class="pos" id="lbPos"></span>
+    <button id="lbStar">☆ Favorite</button>
+    <a id="lbDownload" download>↓ Download</a>
+  </div>
+</div>
+
+<script>
+  const IMAGES = [
+"ad_creative_001f96c9-b5fe-4273-adb8-837f9184b010.jpg",
+"ad_creative_004e4da5-a9b1-4525-8b40-2666ae60cae4.jpg",
+"ad_creative_00b6a9dc-5503-4f5d-859e-1711512ced81.jpg",
+"ad_creative_00fbbfc3-46e3-4145-bbe8-dba6fe64ba2d.jpg",
+"ad_creative_0102f3a2-194d-4822-a5af-458cb6ffb13c.jpg",
+"ad_creative_0126d183-2c22-4cb2-91e1-f9a3d5c160eb.jpg",
+"ad_creative_0148ee9c-2de0-4b95-9d2b-7c5f4549cf4a.jpg",
+"ad_creative_01541e8c-d27e-408f-b2a3-c6863f310370.jpg",
+"ad_creative_0159ee2a-5053-49e3-94a5-98b0dac73af7.jpg",
+"ad_creative_0161d219-fef1-4312-896c-661cc69876c4.jpg",
+"ad_creative_019a0497-ef9f-4355-9f66-d874f92769ed.jpg",
+"ad_creative_01bd67ff-d409-45b2-b902-e6175d4a9092.jpg",
+"ad_creative_01e7fa96-d70c-486d-bd6b-fd3cbafaefe5.jpg",
+"ad_creative_01ec1de5-10d0-4adf-9658-f40b7cf615de.jpg",
+"ad_creative_0240a203-6dc0-42fb-b68d-db1ab0e1ff70.jpg",
+"ad_creative_0309f6df-0699-4c30-96c7-b35fba3835c0.jpg",
+"ad_creative_0354290a-a3ba-4c9a-8d17-517b6c38a28d.jpg",
+"ad_creative_03909bc7-f35a-4c31-8d8d-97d3f09166f5.jpg",
+"ad_creative_0394a4dc-a611-4dc3-8c8c-e8018183e7c5.jpg",
+"ad_creative_03989a47-947f-4ae0-b293-777b92c46b30.jpg",
+"ad_creative_03c941ee-4437-4c59-9599-1c3a0bb400b2.jpg",
+"ad_creative_044e8dba-896f-43db-84ed-79795e70ecd3.jpg",
+"ad_creative_04f143e9-d49e-472c-89c5-0fad1cf4dab4.jpg",
+"ad_creative_05098f8b-fb6b-41c6-8797-5979d1ac9614.jpg",
+"ad_creative_053e91eb-e011-4887-b92c-63f84f3a1cf2.jpg",
+"ad_creative_0597751b-dae2-49a2-93bf-6d3a5750305c.jpg",
+"ad_creative_05d64751-4795-488b-b5da-025cb5f50c4c.jpg",
+"ad_creative_07211b80-c283-410f-ae17-ccfc3dd6fd6b.jpg",
+"ad_creative_07c984be-2b7a-43ca-ab91-d1ce2d36995e.jpg",
+"ad_creative_07cd6935-9d33-48bc-a131-dd0dbdfef359.jpg",
+"ad_creative_085ed28d-f4f9-4de9-b4c0-f5b807313973.jpg",
+"ad_creative_087c857e-4629-4ea5-abfc-9a840ba3cb9f.jpg",
+"ad_creative_08aa8978-9ee5-4c57-a7a8-9ca8eec61591.jpg",
+"ad_creative_08ce0588-9442-49c1-a16f-fc1cf2731d66.jpg",
+"ad_creative_09297ae7-c592-4ad3-9eca-11b1bb337d59.jpg",
+"ad_creative_0957afc5-4cd0-4471-a56f-692dcce90c1f.jpg",
+"ad_creative_0aab6509-1d86-4d51-bf50-bfa5e784f835.jpg",
+"ad_creative_0b5d258c-fea7-4fc9-b240-8cb4c3e67726.jpg",
+"ad_creative_0bcffc42-e9e8-4e1d-b834-a508d6e741cf.jpg",
+"ad_creative_0be26a92-7e8a-4a57-b79f-46a59cfe21d8.jpg",
+"ad_creative_0be2de94-6a3a-4e22-abe3-9492ba7d312d.jpg",
+"ad_creative_0c534e97-a0c7-4310-bae3-17bf72781891.jpg",
+"ad_creative_0c9e58e6-d5d5-4083-b2ee-0fa9d64942a2.jpg",
+"ad_creative_0cdbce84-3b3e-468d-bc32-2a92dd4b92e0.jpg",
+"ad_creative_0ce4a43c-677e-43a4-a0d4-4452cdf6adda.jpg",
+"ad_creative_0cfe1ba3-27da-40a1-8b8a-3e13fb395256.jpg",
+"ad_creative_0d357679-a498-44dd-b43a-46bcde5f9886.jpg",
+"ad_creative_0d3a92a4-c1f7-43d8-87e7-53bc5b5c976b.jpg",
+"ad_creative_0d934f66-50bd-4cd3-ba7f-acd45d26a07d.jpg",
+"ad_creative_0daeb6ae-396e-4244-8329-e75608eb4e0d.jpg",
+"ad_creative_0db5a1a6-f6dc-4350-b4ff-b11ba53da1bc.jpg",
+"ad_creative_0e1630bf-a336-4ea7-88ab-1d574652a839.jpg",
+"ad_creative_0ec69297-7212-4bda-abce-8dac44bbc762.jpg",
+"ad_creative_0ee505db-adf9-4d07-9b25-361827f1fe82.jpg",
+"ad_creative_0ee88422-0865-4f5d-a556-596239eb518b.jpg",
+"ad_creative_0fbd6b51-8c2a-4f96-a1f5-d44bbb56fb70.jpg",
+"ad_creative_100c08f2-5a95-47f4-9777-edbb89ef97f6.jpg",
+"ad_creative_101a125f-6a61-4dee-a039-a9ba8575d25f.jpg",
+"ad_creative_104251ce-2ad2-4f30-b45c-2c45f5bd1654.jpg",
+"ad_creative_108a149c-5e58-4988-bb1c-590f00e30946.jpg",
+"ad_creative_10ebc247-c803-487a-8dc9-35a1df13e04c.jpg",
+"ad_creative_137e9980-4424-4623-b8dc-2586b174df61.jpg",
+"ad_creative_14fdec54-21cb-457b-a62e-a1baef991053.jpg",
+"ad_creative_15d40ed6-4ec6-443f-b8ae-b17df19a2275.jpg",
+"ad_creative_1607a43a-68ff-4bd0-a4d9-fa338cc6ae73.jpg",
+"ad_creative_172e228a-11af-4b52-a26c-e719ed17d13c.jpg",
+"ad_creative_176ef845-345b-4c4d-b0c8-28024034273a.jpg",
+"ad_creative_17f2f78b-2280-4805-b85b-027e10a6121b.jpg",
+"ad_creative_180c2f73-3ee1-47c2-9c2b-364c98b1c54c.jpg",
+"ad_creative_1894925d-a878-4d0c-984b-d3d022578f7d.jpg",
+"ad_creative_19258ce8-48b4-493c-8a6f-7c8ade3158fc.jpg",
+"ad_creative_19548511-385d-4be0-87f5-ccd97682965b.jpg",
+"ad_creative_1980ae22-a0ea-4853-b72a-dfa91c9419d4.jpg",
+"ad_creative_1a5f13ff-ab15-47d4-ab28-c96e501c6c5f.jpg",
+"ad_creative_1ab5e9fe-9f4e-4209-a404-9d14a5076dcb.jpg",
+"ad_creative_1b209e14-9963-41c4-a6a5-df36a29e1f6c.jpg",
+"ad_creative_1b9537db-ca2f-433f-8f80-d3ffcd5d40f7.jpg",
+"ad_creative_1bb4b2d5-7996-46ba-a270-bc47feb6630b.jpg",
+"ad_creative_1cfe6ee2-5638-46e0-9156-1bc2c7607856.jpg",
+"ad_creative_1d006739-6692-4028-be52-c945db46f563.jpg",
+"ad_creative_1d4a92be-4128-4461-8df4-25eec7d21003.jpg",
+"ad_creative_1d6c9a10-2e5d-421c-b8c9-e302eaa7db96.jpg",
+"ad_creative_1dd7d868-c6d2-41b8-9047-a22303ccdffe.jpg",
+"ad_creative_1eab5b54-0919-4013-9cd4-ed58243d9c08.jpg",
+"ad_creative_20b0fa5f-6291-4534-87c9-7fd09afa8988.jpg",
+"ad_creative_231ec126-114e-4428-83e3-2b24742f9f40.jpg",
+"ad_creative_241eb2ac-a8c4-4a31-9b8e-4ddf186fd23f.jpg",
+"ad_creative_2452357e-d893-4e41-94e6-737e053bfba0.jpg",
+"ad_creative_24dbbbc6-3c42-423c-a836-ae4e6141453d.jpg",
+"ad_creative_255dbc2c-fef8-4032-bbb3-42be7cd3e0bc.jpg",
+"ad_creative_268e835e-6307-4b05-b4ed-14c7c2d9a487.jpg",
+"ad_creative_26ff7862-c7f9-44b6-a4c4-27ee24849774.jpg",
+"ad_creative_27337bcb-ed6e-44e8-962b-d7eb3493081e.jpg",
+"ad_creative_27a6fa23-76e0-4c57-85ed-a14f7ca5eb72.jpg",
+"ad_creative_27bc755c-00d3-46eb-bf89-19e3b208ecc3.jpg",
+"ad_creative_28372cf1-a52d-4672-a241-d99316e4fb08.jpg",
+"ad_creative_283d01b9-8f46-45e4-bf87-c2453cbb7468.jpg",
+"ad_creative_28bc843b-d4f4-45cd-a87e-0af6c07f8a52.jpg",
+"ad_creative_295bcc20-f34a-4a26-9b30-db85a1e5d1f0.jpg",
+"ad_creative_2aad2000-9250-436f-ae86-857413f3a500.jpg",
+"ad_creative_2ae0ce2b-cb5a-4ae2-9fca-057c27d85152.jpg",
+"ad_creative_2c05ce30-e266-48ea-bc8e-dad5fc42eff5.jpg",
+"ad_creative_2c98bc5f-4e31-4881-a3ac-39badaed9665.jpg",
+"ad_creative_2d40f046-bee4-4ba1-b7f1-1b4343c5adb8.jpg",
+"ad_creative_2dd57f85-7d7d-4ae7-9ea9-7105c876e082.jpg",
+"ad_creative_2e7de3ba-103a-449f-acfe-fe013bc36d3c.jpg",
+"ad_creative_2f79c683-5078-4f6f-966e-983a836dfb53.jpg",
+"ad_creative_2f9d7946-9a56-40b5-bbcd-c7d0aa8287aa.jpg",
+"ad_creative_2fba2a26-9ed4-468d-bb65-d0e84455ab8f.jpg",
+"ad_creative_3096f175-de3f-4179-bc1e-8a161e3b19d2.jpg",
+"ad_creative_30c4de55-e74a-4e8a-a1dd-40458b79eec3.jpg",
+"ad_creative_31104e8a-5db2-4d83-8739-a9998c821836.jpg",
+"ad_creative_31256bf3-f27f-4ac7-b4d7-1e196e7ca205.jpg",
+"ad_creative_31e9c158-609a-4466-bc3b-fb8b3d97759c.jpg",
+"ad_creative_32a84ac6-4a3c-4c62-917e-0f5e85b04cc8.jpg",
+"ad_creative_32f52886-ba0f-47f6-9e37-fbcb785e47c7.jpg",
+"ad_creative_33efeb61-0948-432c-9fbf-9d219d4dfeba.jpg",
+"ad_creative_343a212d-e92f-47e1-a20e-ca3d5c17dd5f.jpg",
+"ad_creative_35313aab-0f48-4ab8-9144-3ac2ad362724.jpg",
+"ad_creative_35407d27-4120-4949-85dd-f25f8a7d96d2.jpg",
+"ad_creative_35dae61f-1fc4-4aab-bde5-cda57832bb8d.jpg",
+"ad_creative_36991c9d-f13f-4648-8bc7-6c9fcf8df1e4.jpg",
+"ad_creative_36a52f65-fa52-4880-8a46-30693d7999b9.jpg",
+"ad_creative_372e9f83-3245-49c1-9771-34186365af32.jpg",
+"ad_creative_374e1d3f-a67f-465d-8023-029bf602951e.jpg",
+"ad_creative_380178c4-bb70-426b-9350-cfede3de3d50.jpg",
+"ad_creative_39e25ab9-8cc4-4e48-9195-3d12a6a5e93c.jpg",
+"ad_creative_39e2f2da-47c4-44e0-886a-7173b0500ee6.jpg",
+"ad_creative_39f72c06-ec90-49a3-8aeb-ae41409ff51a.jpg",
+"ad_creative_39ffcfcd-04d2-4a16-bac0-0e335974d122.jpg",
+"ad_creative_3a64c1eb-27a9-4e31-a2a1-88774d2f3574.jpg",
+"ad_creative_3a7eb439-d4ee-46db-ac3b-da20b22e9d57.jpg",
+"ad_creative_3aac006a-c45f-45a2-85d0-3dfdcbec497a.jpg",
+"ad_creative_3af23bb4-eb7e-486a-8d7c-4419a283c2d2.jpg",
+"ad_creative_3afdc6a7-2146-4b23-920f-eb23ba74ff11.jpg",
+"ad_creative_3b861ec1-e392-4d76-b95f-6ddae413ecf9.jpg",
+"ad_creative_3b8db9ab-2f7c-4576-8012-a2848abf4aac.jpg",
+"ad_creative_3c29701c-d195-4c59-91e3-7157b776e066.jpg",
+"ad_creative_3d8abb3c-8a02-4ab2-84d8-c24034a0f703.jpg",
+"ad_creative_3e1c244d-93af-4a06-83bf-0f148009842b.jpg",
+"ad_creative_3efe8786-e29f-412e-89f6-d7d42d308eca.jpg",
+"ad_creative_3ff95c69-b452-4022-a50e-dfca58971b8e.jpg",
+"ad_creative_403d686d-0b64-46db-9003-9225cebf8bfa.jpg",
+"ad_creative_404fa7b2-a405-4c09-858d-b6e10649d985.jpg",
+"ad_creative_4062a12c-edee-43a6-aa95-b17df7a3a5d8.jpg",
+"ad_creative_413d29ca-04e0-4b49-87e7-8e5990e6d129.jpg",
+"ad_creative_41fd6946-d25c-46af-9282-9d74b3bc7fb2.jpg",
+"ad_creative_42582684-fde6-403b-b63f-74e71fddbf01.jpg",
+"ad_creative_426c935b-6a2e-4d6b-921a-6427a51cd8df.jpg",
+"ad_creative_4291b5ac-f540-4ce9-8d26-fd0fcd35f5b1.jpg",
+"ad_creative_43250554-6204-459f-a4fa-60d800d1a3e2.jpg",
+"ad_creative_43d9e84c-207a-4851-94ad-e6ea4a4a2729.jpg",
+"ad_creative_448abc2c-1fd7-426a-9f07-73b1360e59aa.jpg",
+"ad_creative_44aee979-fcc9-4947-b901-da3a8759ed06.jpg",
+"ad_creative_44c354cf-4066-4c21-b52a-835ab514ca3f.jpg",
+"ad_creative_45175c23-b654-4c71-b17a-15cdb1c0484f.jpg",
+"ad_creative_457e6bcf-c822-4c68-ab18-08c56e882aaf.jpg",
+"ad_creative_45e301fa-7aae-4098-a0dc-860de5b61f41.jpg",
+"ad_creative_46d58595-4142-4cea-bdf9-6927bd4db15d.jpg",
+"ad_creative_46ed99f4-e8b5-44c3-821b-b4708f686ff6.jpg",
+"ad_creative_472ba9ad-58cd-4f2f-8749-651e729d1b9f.jpg",
+"ad_creative_47941151-a407-4df2-9516-daf054afb36a.jpg",
+"ad_creative_49588c6d-8a32-4557-8acb-26cf74f2e8f5.jpg",
+"ad_creative_49745ddb-6e55-423f-8a5a-173ff74c860c.jpg",
+"ad_creative_498af91e-581d-4d2f-89ef-4212d232ea0f.jpg",
+"ad_creative_4998a990-ec1c-41b1-a26a-60f80f39497e.jpg",
+"ad_creative_49bf2afe-7a92-4f37-82ce-91f7aa7f0764.jpg",
+"ad_creative_49d1716c-4d95-433c-8482-c86181792ed4.jpg",
+"ad_creative_49f227b1-3fd8-4eec-a502-92cd4c3d65a1.jpg",
+"ad_creative_4a199706-3ea7-49ab-b8f4-1fbf7763aebd.jpg",
+"ad_creative_4a2858cc-f1b7-450e-b9dc-b8bbc0da90da.jpg",
+"ad_creative_4a50a155-ac50-40ba-a4c3-601da9cfa5c9.jpg",
+"ad_creative_4a5ebf06-8e16-41c9-81f5-62c64b3e9a5f.jpg",
+"ad_creative_4b2fd84e-42d0-435c-8baa-4f77d82e06c8.jpg",
+"ad_creative_4b302302-6ff4-4b73-b6d4-345b52dd7811.jpg",
+"ad_creative_4b333d26-b947-4734-aa32-4b846a79edf0.jpg",
+"ad_creative_4b3635c6-e835-4c84-95c7-072a9e912716.jpg",
+"ad_creative_4b4db7be-592d-4644-86b7-76c9ef5717ea.jpg",
+"ad_creative_4b55c82b-3e97-459b-ae2a-9b3fd84e730b.jpg",
+"ad_creative_4b92bf3e-a77c-40dc-9a3d-084d754f6ea8.jpg",
+"ad_creative_4c27f394-8e27-4415-b210-dfeb4cdae2d5.jpg",
+"ad_creative_4c5dcd56-6d27-4d2b-bb1e-9fcc0f79d1f5.jpg",
+"ad_creative_4cab3b84-9d4e-48c4-9217-078b5e00e901.jpg",
+"ad_creative_4ce47fff-5a7c-4e7d-b094-bba5861b97c6.jpg",
+"ad_creative_4cec1076-b5bb-4d41-a41e-26fe4b75e9c9.jpg",
+"ad_creative_4f00a5e4-5306-4b46-ba32-09f00b1cb813.jpg",
+"ad_creative_5024b483-30c8-49cc-b538-9877fa9615f3.jpg",
+"ad_creative_502a0385-9e68-4b26-be77-8ace254f9562.jpg",
+"ad_creative_50324cc9-25b5-4267-bb40-f1dadf481525.jpg",
+"ad_creative_5147ab4a-559d-4bd5-8f95-95858b0721e1.jpg",
+"ad_creative_52026e45-3f6c-499f-84d5-2f24077d152a.jpg",
+"ad_creative_52160cf6-d45d-4736-9e07-71aac3352577.jpg",
+"ad_creative_52219258-9410-46f5-b330-705955439f6d.jpg",
+"ad_creative_5266ec66-a770-4242-a4ea-973cbc2bf733.jpg",
+"ad_creative_52a8e5b1-b17f-49f6-a4ab-c51511c4e890.jpg",
+"ad_creative_53346013-031e-49c7-a30e-98f3f5b7b9a2.jpg",
+"ad_creative_53558577-1382-4c16-a48b-b00d0ad09110.jpg",
+"ad_creative_53fa2a9a-2fb6-4ed5-9e58-741d517fccf1.jpg",
+"ad_creative_5415e282-8839-4f30-93a3-902cc0e35cb4.jpg",
+"ad_creative_542b91b4-c8cc-439c-a8c1-bdd8d855f315.jpg",
+"ad_creative_544c6d39-f583-45d3-8a8a-8237e7269f4f.jpg",
+"ad_creative_5472337b-1750-4289-8ef8-0bf1e2fd4905.jpg",
+"ad_creative_5508e6f3-785d-4170-9934-35c5e052e1e2.jpg",
+"ad_creative_55341d3d-42f9-4978-af2d-b8f51f1d5958.jpg",
+"ad_creative_563ef4a7-b97d-437d-be4c-00e9a932ccc7.jpg",
+"ad_creative_56b6cbc5-47f4-47bc-bcc5-07e2469583dc.jpg",
+"ad_creative_56d69ff9-2b5a-4b3d-adbf-370976c83930.jpg",
+"ad_creative_579d4c39-58a6-4f6d-aff3-3a63649596fc.jpg",
+"ad_creative_58755ae7-aa37-48a2-9a91-ed8d28867c15.jpg",
+"ad_creative_58d50514-4d21-4d25-90db-83a761537a4d.jpg",
+"ad_creative_59b4038e-b601-4c23-b0a5-5de42329cf15.jpg",
+"ad_creative_59be67fa-9844-465b-9702-60bc3021d783.jpg",
+"ad_creative_59c6b5db-b0c6-4bb1-9812-b3c24dae7751.jpg",
+"ad_creative_5a6b58e4-19d9-41d0-bb20-d3ba722cec2c.jpg",
+"ad_creative_5b37b72b-f43a-4273-9e81-346d9e4b7269.jpg",
+"ad_creative_5b3e1562-cdf8-4e50-9738-50434fbc0e26.jpg",
+"ad_creative_5b4f23a1-1487-4328-a176-e43d3e0fed36.jpg",
+"ad_creative_5c7e1863-57e9-4ea8-b1db-ff872ba3bba5.jpg",
+"ad_creative_5cb124ea-3096-4145-a10d-8a991fff792a.jpg",
+"ad_creative_5dbeddf6-7450-43da-b124-59e6e83ff2bb.jpg",
+"ad_creative_5e249184-2e68-4c25-b3e9-8653e0ff606d.jpg",
+"ad_creative_5f2c3a78-e3ef-4466-b25b-db5042f045c8.jpg",
+"ad_creative_5fc25897-e342-4727-81bb-a785bd6731ee.jpg",
+"ad_creative_60ec35de-e9ff-4099-84e1-fc5f1c597a5c.jpg",
+"ad_creative_618b9bad-6626-4c72-9039-a04961b4e2e7.jpg",
+"ad_creative_61e355aa-1188-4600-a5ad-72ad60cb3832.jpg",
+"ad_creative_623402d3-edc0-4164-9624-793c8f59f2e1.jpg",
+"ad_creative_62a71850-4582-46af-ad29-ac5f41246bab.jpg",
+"ad_creative_62c24c0a-d3af-47a5-a420-f80ed5e425f1.jpg",
+"ad_creative_62e0c8e6-efcc-4993-bec2-0698e409766c.jpg",
+"ad_creative_638f8457-76e0-4dd9-856c-52414b6b931d.jpg",
+"ad_creative_63a74b79-cabb-41bb-8274-037e4af61f8a.jpg",
+"ad_creative_63d109a2-9a75-4fda-adfe-93e1e6af536c.jpg",
+"ad_creative_63e08ffa-c0a2-46f8-8afb-0dcf3e972a29.jpg",
+"ad_creative_650a7b2e-6165-4841-a28c-656f2e93b1ea.jpg",
+"ad_creative_650bb056-a422-45a3-821f-021ca0752423.jpg",
+"ad_creative_652075f6-0537-4269-9258-1b17b49caed3.jpg",
+"ad_creative_6543097c-fb1e-4751-884b-cf976276dd53.jpg",
+"ad_creative_65c225a9-8d03-4883-981d-04ef73c1348a.jpg",
+"ad_creative_65f54823-eea3-4ea4-8dd1-6da49a7dd451.jpg",
+"ad_creative_66ac411f-d660-4001-ba88-a0a7581a3de7.jpg",
+"ad_creative_66be189f-f324-4e21-b9e1-0ad90ec6c778.jpg",
+"ad_creative_67309b77-1960-497c-8c03-e3a8a61bfd03.jpg",
+"ad_creative_675be428-dcc9-4578-a07b-519133f0b4bd.jpg",
+"ad_creative_6921b13e-f9b6-435e-b417-de5603759301.jpg",
+"ad_creative_6926175e-a502-4254-a859-f87d91c3924e.jpg",
+"ad_creative_69527345-26c8-45ec-b5b0-a994d982442c.jpg",
+"ad_creative_6998e60c-4f7e-40d8-b12e-4abc00b76b75.jpg",
+"ad_creative_6a3be681-df24-49f0-b6c4-47d2b229ae4e.jpg",
+"ad_creative_6ad76ba0-f192-46e9-b179-1524153778ef.jpg",
+"ad_creative_6b50c80a-a50c-4e97-9833-6d3605bbb3f5.jpg",
+"ad_creative_6bdf44a4-3b99-4984-9960-7a68ec20639e.jpg",
+"ad_creative_6c258d88-4d87-4b47-831a-74733f8dabd6.jpg",
+"ad_creative_6c30dda7-2403-45ce-aa91-8d0b2f464b13.jpg",
+"ad_creative_6c859044-50cf-4e38-b0ed-a9569289faba.jpg",
+"ad_creative_6d509aba-e521-466b-9b81-071bfdecd391.jpg",
+"ad_creative_6d71994b-c645-4d81-bbf3-7dc6cac54cc5.jpg",
+"ad_creative_6e00971b-13a8-4e0a-8ea5-f9963e844de6.jpg",
+"ad_creative_6e1e22b9-5662-4514-8121-0d0a85a16763.jpg",
+"ad_creative_6e76b468-f687-4db0-a673-64f83cafad41.jpg",
+"ad_creative_6e8de203-4031-4c6b-b3bb-6d41e5a18498.jpg",
+"ad_creative_7057e179-e705-4bb3-b315-941d52f928dc.jpg",
+"ad_creative_707248e2-da6e-46da-b4fb-4dfa5d40ac7d.jpg",
+"ad_creative_70857665-d19f-4235-9631-35dac9869214.jpg",
+"ad_creative_708d4b59-b67b-4ff2-b52e-fcab2915f6f6.jpg",
+"ad_creative_71270372-7b8d-4fd6-93e3-7c8e97ab892c.jpg",
+"ad_creative_72380e0f-21f2-4cda-9420-dda50823fa8f.jpg",
+"ad_creative_729f0f68-4f30-45fc-89bd-cfe1d4b0d24d.jpg",
+"ad_creative_72e24d80-c125-4c80-9712-24650b44e8c3.jpg",
+"ad_creative_733b0aa2-fec4-4d07-83e4-4c65dcaa78ad.jpg",
+"ad_creative_73f0ad24-1c58-4254-8d88-7f6f97bb644c.jpg",
+"ad_creative_7477ac81-3aa4-40ca-8e70-f433a11ebf5d.jpg",
+"ad_creative_75261962-e490-450d-b228-61d367672227.jpg",
+"ad_creative_762aa9d0-c124-4d17-beaa-516074e84d5e.jpg",
+"ad_creative_7639ab60-9df1-408c-9818-201b41197884.jpg",
+"ad_creative_76683375-5b7a-49c3-b3a7-42c925172bbd.jpg",
+"ad_creative_784c66f7-a4d0-4d8e-a4e2-4a44d4bd7160.jpg",
+"ad_creative_78a7d76a-5a7b-4f1e-a6ae-f47751055e5d.jpg",
+"ad_creative_7907b0d1-903c-4812-b60a-163c44441ee2.jpg",
+"ad_creative_79159ab4-c8a8-446c-a877-566bfaec9eaa.jpg",
+"ad_creative_7978aaf1-3a4f-4c75-b830-042f59508f82.jpg",
+"ad_creative_79f58093-9a35-4703-8f1f-7b92b96e38e7.jpg",
+"ad_creative_7acc4e20-61f1-4ad9-a2aa-b034ec4e3f80.jpg",
+"ad_creative_7b2b13fa-4733-4df3-ae45-a3f0348e4ae3.jpg",
+"ad_creative_7b886b1c-e692-4f03-8647-4d027c3bc2a7.jpg",
+"ad_creative_7b976e7e-6558-4e1c-9065-42cb8e863a11.jpg",
+"ad_creative_7c4688df-e705-4c50-ae88-ef500b3b0f8f.jpg",
+"ad_creative_7c9b00eb-6589-4a65-a356-21b1703b0f48.jpg",
+"ad_creative_7cd88f97-470d-41ab-b789-bf839e668390.jpg",
+"ad_creative_7d833f9c-cc95-4986-a150-b41e41bc79ef.jpg",
+"ad_creative_7f01b53f-adaf-47ae-bd22-508eadbe5cb8.jpg",
+"ad_creative_7f98598d-fc71-4218-a232-5944bdc74bd1.jpg",
+"ad_creative_80363144-0b66-4da8-b4e1-0631a0437216.jpg",
+"ad_creative_803771ef-f724-4266-89dd-b9d1343355dd.jpg",
+"ad_creative_8088a761-a966-4f0a-9591-6d0bd63d1d69.jpg",
+"ad_creative_80b883db-9866-4885-9af5-9a5be0435c83.jpg",
+"ad_creative_80e97b97-f2be-4bdd-b2a5-b0377e7507b8.jpg",
+"ad_creative_814baa30-6a63-48e5-aaa3-e57e953c159e.jpg",
+"ad_creative_8157459a-d1ff-43a7-a79a-dd5cc49194e7.jpg",
+"ad_creative_818c4ee8-23cf-4017-889a-ec89ccbb0f28.jpg",
+"ad_creative_819b4c5f-a594-4246-99de-aef8dcf87f9a.jpg",
+"ad_creative_81aa60ef-91d6-4120-9615-963070bc5a9e.jpg",
+"ad_creative_82018e19-d583-4451-96bb-7c49ec0aa525.jpg",
+"ad_creative_825a7092-b0ca-4b7e-97c1-3fb722b10827.jpg",
+"ad_creative_82cc67f1-4c7e-41d2-965e-52ba08ac577a.jpg",
+"ad_creative_82f86487-a3bd-4bd8-8ff1-9fe6b8964867.jpg",
+"ad_creative_8360af76-99c6-4456-8888-9a5a99e0445d.jpg",
+"ad_creative_837fb621-c39e-4834-b213-e34386822234.jpg",
+"ad_creative_83c677dd-50d0-455c-9dc0-4e3778cb591a.jpg",
+"ad_creative_84175531-b2c0-40e4-b9cc-86786c5e2d9c.jpg",
+"ad_creative_8489d7eb-6a4e-432b-a4ae-16fb18bc115c.jpg",
+"ad_creative_850905c2-297a-4d92-845a-cc6afb10ddf7.jpg",
+"ad_creative_859c9dd2-662e-417e-b1b2-a702978f531a.jpg",
+"ad_creative_85e30224-637b-47ea-8dc3-9663b3afc3fc.jpg",
+"ad_creative_88a95bb8-265a-49ee-a6dc-db46cc5672fd.jpg",
+"ad_creative_88e933b9-4373-4e91-affd-e5e948671c3e.jpg",
+"ad_creative_89ad6ff8-e599-497a-a74c-0d560dfd3026.jpg",
+"ad_creative_89b2bb8e-1e39-4273-a20e-ae9267bd8a86.jpg",
+"ad_creative_89c37ee8-a356-4c11-974c-8bcf75acc321.jpg",
+"ad_creative_8b6753a6-3774-477d-8e61-1247aa1263d9.jpg",
+"ad_creative_8ced2180-b46a-4368-81f0-3842472b268e.jpg",
+"ad_creative_8dbb93b3-4047-445f-9cda-3ad799c6fe52.jpg",
+"ad_creative_8e1e34e6-7d4a-4ed6-937f-9d08cee33203.jpg",
+"ad_creative_8e75fca1-7920-404a-afbe-a56745102c04.jpg",
+"ad_creative_8eb57a4a-910b-4486-bbce-66f1bda150ff.jpg",
+"ad_creative_8f0c2f66-0807-4e41-9919-2eec7eeeca1f.jpg",
+"ad_creative_8f4ed9a1-7da2-4ce7-bc14-cfead7cb674b.jpg",
+"ad_creative_8f737620-0149-473a-a9d3-173e2373c6fd.jpg",
+"ad_creative_8fae8f52-321a-4e9f-8424-7e0a3f8e92ea.jpg",
+"ad_creative_8fcdd422-1b48-427d-948d-ece98367aae5.jpg",
+"ad_creative_91612fa6-9f6d-43d9-b4d2-3c4ad81d322f.jpg",
+"ad_creative_91baec55-b1cb-493a-807b-d81e5fa53919.jpg",
+"ad_creative_92be1bc4-d410-4189-b6fd-2f6d6c99dc55.jpg",
+"ad_creative_92d4618c-c8c1-4cae-92ea-7124134df37d.jpg",
+"ad_creative_94775eec-5697-4493-bc99-9914f9f61369.jpg",
+"ad_creative_9480c314-a4c6-4a2b-9811-d606072664e9.jpg",
+"ad_creative_94a959a3-4e68-4f20-b3dd-3fa18e1e60dc.jpg",
+"ad_creative_95aec9d7-0064-4e46-b59e-9d8829324d39.jpg",
+"ad_creative_960aaa29-5aed-41e6-b3ec-f692702d638d.jpg",
+"ad_creative_96f65e4b-a76c-4421-8086-e9bac825b7c1.jpg",
+"ad_creative_97fc1d70-11b3-43b5-a93e-fcc3ee94879b.jpg",
+"ad_creative_9c084c40-a624-47eb-a1f0-36451f6880ef.jpg",
+"ad_creative_9c1a23ee-1b9b-422c-b90d-e357091ece89.jpg",
+"ad_creative_9c85398e-53a0-4d14-88e0-b019e48e9a46.jpg",
+"ad_creative_9cd33c3d-9f12-40c1-9699-095418dba06e.jpg",
+"ad_creative_9cfb6c9b-2209-43f4-811d-09c85a870247.jpg",
+"ad_creative_9d1aee84-f1c0-41bf-bb25-915da02c20bd.jpg",
+"ad_creative_9d37fd6a-1396-4963-b735-d55a232630ab.jpg",
+"ad_creative_9df378bc-690d-4598-af0e-20458c51778a.jpg",
+"ad_creative_9e92dfef-4809-4bee-879a-a0d02add3a35.jpg",
+"ad_creative_9ea58d0d-2f70-48a4-b51e-1688afcc1699.jpg",
+"ad_creative_9fbdfb7a-1c63-4c2d-809e-66242fd63d69.jpg",
+"ad_creative_a0063bfb-6d06-406d-a6be-eda557a7e842.jpg",
+"ad_creative_a01b3d5f-928a-4114-b6fc-7043f0f2f4bd.jpg",
+"ad_creative_a089f529-b119-41ad-8afe-4812dbfeb46b.jpg",
+"ad_creative_a2b9457f-6472-418d-9d52-817d4508c499.jpg",
+"ad_creative_a346637f-e0be-4789-a4bf-43f8cca03b39.jpg",
+"ad_creative_a359f3d5-e51f-4c4e-9635-d71c63ba7ad4.jpg",
+"ad_creative_a39dfee6-5c8d-4bb8-9587-c4d93d1ea233.jpg",
+"ad_creative_a4a5beaf-5b0a-403e-a351-cfb64e4f59fd.jpg",
+"ad_creative_a577f897-6c75-499b-a1a2-c40b18968f3f.jpg",
+"ad_creative_a5f672fb-6432-48ed-b67b-0236f426cb1c.jpg",
+"ad_creative_a68a4115-5dd6-44e7-aec4-2776938632ea.jpg",
+"ad_creative_a6b6f927-e513-4c73-8790-2d10d7933914.jpg",
+"ad_creative_a859b80b-c1a6-47fc-b0c9-934f5397b085.jpg",
+"ad_creative_a8640023-04cb-47d6-9c55-5c4be85ec4e8.jpg",
+"ad_creative_a8f89e36-3146-4935-a5ab-a07d50e6a059.jpg",
+"ad_creative_a9f91b3b-c58f-42fa-a4b5-8d4b6741be7b.jpg",
+"ad_creative_abb51c44-11c6-4427-ac44-d3e445ff5b39.jpg",
+"ad_creative_abd019d0-3813-480c-9d15-edcdd0a1cf45.jpg",
+"ad_creative_aca9763c-6a7f-44ae-9ca3-1f397351a031.jpg",
+"ad_creative_acbed2b1-aac8-47a0-a946-df33d1e1402d.jpg",
+"ad_creative_ad5a903a-b0f3-40ca-ae4d-ab58d207c284.jpg",
+"ad_creative_ad6f2730-5a89-4887-b8a9-7fd846dd6860.jpg",
+"ad_creative_adfdfef5-f4ae-4c2b-9b6d-9cd15f66adf7.jpg",
+"ad_creative_aeb7a5c9-9a1c-4a97-bb9f-e8fb8fb6b9b0.jpg",
+"ad_creative_aed20a96-6d9f-4b03-8400-9a711c9dc7fc.jpg",
+"ad_creative_aefde372-dce4-4ca8-99aa-bcbb7ecd4d5a.jpg",
+"ad_creative_af30cbeb-40da-4d1e-b0c7-417ec9cfd52c.jpg",
+"ad_creative_af6b1518-6b15-4798-a07b-e39a1e45f195.jpg",
+"ad_creative_b00ac946-3fa0-49ec-a897-6bf59438db37.jpg",
+"ad_creative_b192ae82-41dc-44a5-9d65-e0a9526d654f.jpg",
+"ad_creative_b229e220-2b4b-4fcf-861b-00d00d514883.jpg",
+"ad_creative_b264e587-2fc5-444f-8fc3-6c8c84d0f77f.jpg",
+"ad_creative_b337432c-1537-4c60-91c0-4c42108237b1.jpg",
+"ad_creative_b3f60ab4-01d2-4b81-ab80-7452266937b5.jpg",
+"ad_creative_b3fa9720-3124-4e71-9a4e-89367d705bc0.jpg",
+"ad_creative_b47e1ccf-20f8-4f79-9d82-1504ecac15d3.jpg",
+"ad_creative_b4a8b107-d7f3-4922-845e-36a086d81d52.jpg",
+"ad_creative_b4ca055e-fdf4-4858-ae69-55de2f30fbed.jpg",
+"ad_creative_b537786d-e185-4e01-9117-d8c44aa606de.jpg",
+"ad_creative_b560db48-05c5-40d0-8bd6-11ae346e263e.jpg",
+"ad_creative_b5d8078d-daec-4dc7-87e7-1ae884def872.jpg",
+"ad_creative_b5fa41f6-0b31-4b54-9fe6-2752b7998e62.jpg",
+"ad_creative_b669c69a-eb75-46b4-8674-a100ae990dcb.jpg",
+"ad_creative_b76c7e47-abee-4425-ba14-edb85b3e5b5e.jpg",
+"ad_creative_b7d46e74-00a0-4f13-8297-fd92bddab803.jpg",
+"ad_creative_b825c848-1103-49e0-8544-6401512bf596.jpg",
+"ad_creative_b8b71c95-38e2-46bd-8b46-18568c45c079.jpg",
+"ad_creative_b8b8eb3b-bafd-47c5-8a29-108ab9174561.jpg",
+"ad_creative_ba319759-6ffc-4cc8-90d7-716654a82b87.jpg",
+"ad_creative_ba94d4f0-2972-44b9-a257-2f3cb9a24492.jpg",
+"ad_creative_bbc66399-c3bb-4dfa-a098-685cb72a1f7d.jpg",
+"ad_creative_bcd83585-46f1-4fc4-bd8f-95db38995608.jpg",
+"ad_creative_bd7e3e42-cee6-4cb5-9ad0-ddbee8deb846.jpg",
+"ad_creative_bdda331c-244e-437b-8357-f265c00846cd.jpg",
+"ad_creative_bded1df5-9a4a-4c1d-a747-16bcffd90d68.jpg",
+"ad_creative_be40ca54-9fb0-4cdb-bf25-598ff0b1ed59.jpg",
+"ad_creative_bfbf1340-2624-480b-8018-4da979294dbf.jpg",
+"ad_creative_c0145ec7-c46d-4768-8e66-ed9643169512.jpg",
+"ad_creative_c0461d6d-f3da-413a-85e2-9311bbc1fcb1.jpg",
+"ad_creative_c0943925-c16d-4ccd-b751-1f8d8261589c.jpg",
+"ad_creative_c1986fa9-2fd2-481c-b91e-361f3f23de2a.jpg",
+"ad_creative_c29f085c-097b-44f2-80a6-7ab7d9271774.jpg",
+"ad_creative_c2a9ae02-fc70-4c65-8199-723954a704c2.jpg",
+"ad_creative_c40f9b9c-7f8f-4524-a0b7-2c64c903c8df.jpg",
+"ad_creative_c4a5585f-ad39-4754-ae2b-500094ba006d.jpg",
+"ad_creative_c53cbe49-1fdd-4899-b162-3f76283ed7c0.jpg",
+"ad_creative_c5cce86a-596d-4cd3-bff8-fae88e035b0e.jpg",
+"ad_creative_c71ad457-4a4d-4d58-a0a5-58aa1acff5bf.jpg",
+"ad_creative_c797b1b3-d74f-4234-b14c-e3b7fd3b4cb1.jpg",
+"ad_creative_c806b4c3-13ec-4585-b0f6-610cc715bf1e.jpg",
+"ad_creative_c83a5381-e44d-47d6-92f9-2bbf61189bce.jpg",
+"ad_creative_c85aa648-4f4a-4704-b14f-149f3109dad9.jpg",
+"ad_creative_c945bda1-b922-4c01-9f4e-e51b93262ee1.jpg",
+"ad_creative_c9507dbe-4ea5-47bf-9a91-7dd36f623ea0.jpg",
+"ad_creative_c95a314c-e555-4449-af43-de82ec873eb3.jpg",
+"ad_creative_c95cbcf2-259c-4259-a67a-6cde086610c3.jpg",
+"ad_creative_c9e866ee-e640-4e40-be8d-5863624ae8ad.jpg",
+"ad_creative_cb0f1c40-4b68-4fa1-82b1-758a5a3738f4.jpg",
+"ad_creative_cb16898f-ec6a-4e25-8cfc-1f9f5a654004.jpg",
+"ad_creative_cbeb628a-d495-4dce-9424-d70e87291abd.jpg",
+"ad_creative_cc451362-8777-418e-b54c-e4e41293b0c8.jpg",
+"ad_creative_cc459fb9-6dfd-46fd-ad5b-ee5ffd8e1901.jpg",
+"ad_creative_cc8a9a9f-da44-4b9b-b950-110f18a80ae8.jpg",
+"ad_creative_ccff666c-9193-4429-8790-894306a3e044.jpg",
+"ad_creative_ce15a54f-8209-463d-b340-2b0dada9fff3.jpg",
+"ad_creative_ce276de1-f566-485f-8d99-772bcd705172.jpg",
+"ad_creative_ce8d2bbe-2e76-495b-a2d1-e826d4dd0019.jpg",
+"ad_creative_ced89ee7-366e-49af-ad4e-aa23e0b952b2.jpg",
+"ad_creative_cf6e7aa0-a310-4ddb-a140-021a59092814.jpg",
+"ad_creative_cfdcbc34-75f7-4e5e-a272-4fa24e8d71b6.jpg",
+"ad_creative_d061b791-85f4-4c17-943f-19b9e2dd2585.jpg",
+"ad_creative_d0807a5b-3015-4142-8e0e-a8a5c8af74bf.jpg",
+"ad_creative_d09c9194-3b5b-40bd-ad75-7c81c13b488c.jpg",
+"ad_creative_d1247134-568b-46c2-8378-e53dd7c06800.jpg",
+"ad_creative_d163c920-5bbf-4c00-88a9-20b41b72e584.jpg",
+"ad_creative_d1d62836-bc24-4de0-a0cd-e083e55ac770.jpg",
+"ad_creative_d35e54be-1a14-4958-938b-5294b4453599.jpg",
+"ad_creative_d40e6813-d7ce-4c1e-9e69-1fe9b62e86a4.jpg",
+"ad_creative_d4507b9f-6aab-4dd6-ad3a-467b6e8a3f26.jpg",
+"ad_creative_d590c1b2-23a2-49f6-af63-f2ecc984503c.jpg",
+"ad_creative_d5a19b27-e5d3-450d-ae0b-9c041e9aba95.jpg",
+"ad_creative_d60a07d2-655e-48d4-b03c-39a2b1d467b2.jpg",
+"ad_creative_d6990e47-175d-4bf7-8071-9c9b96eca0d3.jpg",
+"ad_creative_d6a3eb58-1480-46c7-bcf7-75a9828755d1.jpg",
+"ad_creative_d71a4b19-d6cd-4ab1-85f7-8b5bd26b2f55.jpg",
+"ad_creative_d785ca01-5979-4c87-a116-6d939ba35ced.jpg",
+"ad_creative_d939b449-1610-4289-856c-dce017c9b531.jpg",
+"ad_creative_d9a619a8-b6ef-46cc-b28a-92a400cee72c.jpg",
+"ad_creative_d9f807e7-9d3a-44ff-950a-92f41e76dcf2.jpg",
+"ad_creative_daa29e4c-8a8e-4c5c-94c7-f47ee78ade65.jpg",
+"ad_creative_dad74034-7b54-4960-b334-86f1f819071d.jpg",
+"ad_creative_db7cfcd6-4083-4eec-ba48-e570df89723d.jpg",
+"ad_creative_dc2f8511-5b87-4789-97a9-3747dbc419ba.jpg",
+"ad_creative_dc6092ef-1829-48bb-9753-20a3c48f24fc.jpg",
+"ad_creative_dd6516e7-c76b-4920-8ec8-54722b0cc04c.jpg",
+"ad_creative_dd8a63df-c61b-4d50-a275-eba8080b43b5.jpg",
+"ad_creative_ddaa3fb0-fb6a-450c-b0c0-26f342aec7de.jpg",
+"ad_creative_de09eccd-5c11-45b9-9a85-af2ed576d5ea.jpg",
+"ad_creative_de183d94-b050-40e7-bbb3-7113e19a5e7c.jpg",
+"ad_creative_de1d9aea-afe3-4455-90d0-59d8170a5f30.jpg",
+"ad_creative_de7f6e77-dc59-4040-98b5-df8660cf43d1.jpg",
+"ad_creative_df8d9670-7554-435f-829d-c54f96887b67.jpg",
+"ad_creative_dfd51a8d-c29f-4b20-9c64-0eff42ae5b2a.jpg",
+"ad_creative_dfe90b6c-93d2-495d-828f-9d595b084bce.jpg",
+"ad_creative_dffc2d34-dd77-402d-8c17-3a26cfb88f07.jpg",
+"ad_creative_e23ee24d-3593-47c2-9679-60e974024bf3.jpg",
+"ad_creative_e27cb360-db0a-4cf0-be4e-d7496ba7bf1f.jpg",
+"ad_creative_e38ce362-bd71-463d-bf04-76f44ad76c89.jpg",
+"ad_creative_e4321235-18a6-4e09-a7aa-4133528a45c8.jpg",
+"ad_creative_e43d4fce-dea2-4157-a099-0c44a6ea9f2a.jpg",
+"ad_creative_e4888adf-85b1-4261-ad93-8ce4ed893998.jpg",
+"ad_creative_e506d734-1cd3-44b3-b087-c241922efedf.jpg",
+"ad_creative_e6772daa-159c-48a8-9e56-24fb4d526e1b.jpg",
+"ad_creative_e68db02f-7b23-478b-9ed2-ccf7ee731bc0.jpg",
+"ad_creative_e7ca18c7-87fe-42cd-aa7a-afcef6322129.jpg",
+"ad_creative_e8135a9c-e3fd-4c56-98de-813f9a315aff.jpg",
+"ad_creative_e8360706-5157-455f-aa41-0863afed5559.jpg",
+"ad_creative_e84c06b7-e887-4978-aa76-709ee0d45251.jpg",
+"ad_creative_e8993f0b-71e1-4ff5-b81b-fd5890c6eafe.jpg",
+"ad_creative_e8dd5b18-8c69-4871-bb78-e3c5ebd886a5.jpg",
+"ad_creative_e8e3b12d-4239-4a07-9b64-1bb60c6c7f43.jpg",
+"ad_creative_eae56e39-6caf-4715-ac67-f9dc56635d4c.jpg",
+"ad_creative_eba68fed-d0e0-4e81-8527-5c1709cd2bb5.jpg",
+"ad_creative_ec07d9ff-c951-4155-888c-1c9fdab43dca.jpg",
+"ad_creative_ec1108c9-24a1-46f4-ab40-201285e6ca96.jpg",
+"ad_creative_ec2cb4d6-53cb-46a8-9d17-1efc2a72ff21.jpg",
+"ad_creative_ed6bd2cd-c7eb-48a4-b0ab-d53a56067000.jpg",
+"ad_creative_edd60830-b755-4eb9-b9bb-5ef05415b90b.jpg",
+"ad_creative_ee080a96-8098-4554-bf84-fa86dff1f01b.jpg",
+"ad_creative_f03380da-61a6-42a2-8ce7-ff69c54872db.jpg",
+"ad_creative_f1921561-ad98-41ec-ad80-52b8a600d9e5.jpg",
+"ad_creative_f21c5e4a-9083-4452-ba7c-5371811a290c.jpg",
+"ad_creative_f2bf108c-4b3c-4b9d-af64-0935d88e4e1a.jpg",
+"ad_creative_f33ad1d2-38c5-4f06-91c7-4a5a2a1caa69.jpg",
+"ad_creative_f34d1ba5-944c-4d74-a69d-996ca82ba0c2.jpg",
+"ad_creative_f34e3871-13a2-4ac3-8e5c-389ee4ade6c1.jpg",
+"ad_creative_f360c60a-9192-4ba7-905b-260584aa07b6.jpg",
+"ad_creative_f3a76532-68eb-45cb-87b8-4c65afb268e1.jpg",
+"ad_creative_f3ee1aeb-44c6-4e53-8256-aff178b99453.jpg",
+"ad_creative_f477a0f4-a103-4fdc-bc32-245c15eaa6c4.jpg",
+"ad_creative_f4ee6e67-7bc8-4d75-8cb3-9ea2315d947d.jpg",
+"ad_creative_f51c117a-0252-4732-9300-0768b37d4077.jpg",
+"ad_creative_f535a5da-5386-4e57-be22-f0a2de4040dc.jpg",
+"ad_creative_f5650445-4926-42a0-86a0-02f236baceeb.jpg",
+"ad_creative_f5e868db-4819-4587-9a78-92690039b576.jpg",
+"ad_creative_f65abd04-e8df-4ec3-9554-91c2be2f8e4c.jpg",
+"ad_creative_f67be03f-4c2f-42e5-a107-c50d91288264.jpg",
+"ad_creative_f7377ea8-27d2-4470-b27a-2ab7df065c69.jpg",
+"ad_creative_f77269dc-40e5-4cfe-be6d-28c1c5befe77.jpg",
+"ad_creative_f784ad23-17cb-4824-ad23-404f934ce747.jpg",
+"ad_creative_f8ad15d1-4530-4b31-b150-1062eb3d1cee.jpg",
+"ad_creative_f9347064-3f55-4f47-9b28-be704a3558ca.jpg",
+"ad_creative_f9803de3-df5c-4691-a5b5-19e94a4af8d6.jpg",
+"ad_creative_f9b4a3a4-20f4-47a9-95cf-43ca6e2ec561.jpg",
+"ad_creative_fa539697-bdc6-41ac-b942-3ad79f96ae46.jpg",
+"ad_creative_fa6913ca-f9eb-4e74-8933-215eca5723cc.jpg",
+"ad_creative_fad90237-c872-4179-978c-a20b12b0411a.jpg",
+"ad_creative_fb1324c2-bc34-44cd-a436-1450c984a84e.jpg",
+"ad_creative_fb4c33a3-4820-487f-b0e9-a6728474ca4b.jpg",
+"ad_creative_fb6a9ef8-f31c-4a3e-95f4-6b38f971a86d.jpg",
+"ad_creative_fbcf11c4-7446-4f0c-8a0e-dcf6134c937f.jpg",
+"ad_creative_fbe40b04-2524-49f4-bf13-56dd3f1cf98a.jpg",
+"ad_creative_fc1f33c4-24c8-44fc-9b2a-494a84840019.jpg",
+"ad_creative_fc71fcda-da76-4dbf-b00f-cba59eede353.jpg",
+"ad_creative_fcbd0d57-b003-44ea-8cee-d883a26042e8.jpg",
+"ad_creative_fe361054-5fba-4541-827f-52ee99cba7dc.jpg",
+"ad_creative_ff63ae15-dac3-431f-b4f6-0650a9094561.jpg",
+"ad_creative_ffab78f5-7d38-407d-b2b6-e13c15cd151e.jpg",
+"ad_creative_ffd13cee-691b-43c3-b8d6-3fd4b8418ae1.jpg",
+  ];
+
+  const META = {
+"ad_creative_001f96c9-b5fe-4273-adb8-837f9184b010.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_004e4da5-a9b1-4525-8b40-2666ae60cae4.jpg":["Newton","Baby & Kids","Square"],
+"ad_creative_00b6a9dc-5503-4f5d-859e-1711512ced81.jpg":["Medicube","Skincare & Beauty","Square"],
+"ad_creative_00fbbfc3-46e3-4145-bbe8-dba6fe64ba2d.jpg":["Shreddy","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0102f3a2-194d-4822-a5af-458cb6ffb13c.jpg":["Lifeboost Coffee","Food & Beverage","Story (Vertical)"],
+"ad_creative_0126d183-2c22-4cb2-91e1-f9a3d5c160eb.jpg":["RoseSkinCo","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_0148ee9c-2de0-4b95-9d2b-7c5f4549cf4a.jpg":["DIRTEA","Food & Beverage","Square"],
+"ad_creative_01541e8c-d27e-408f-b2a3-c6863f310370.jpg":["Surreal","Food & Beverage","Square"],
+"ad_creative_0159ee2a-5053-49e3-94a5-98b0dac73af7.jpg":["Momofuku","Food & Beverage","Story (Vertical)"],
+"ad_creative_0161d219-fef1-4312-896c-661cc69876c4.jpg":["Wild Nutrition","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_019a0497-ef9f-4355-9f66-d874f92769ed.jpg":["Dose","Health & Wellness","Square"],
+"ad_creative_01bd67ff-d409-45b2-b902-e6175d4a9092.jpg":["Catalyst","Pet","Story (Vertical)"],
+"ad_creative_01e7fa96-d70c-486d-bd6b-fd3cbafaefe5.jpg":["Wild Nutrition","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_01ec1de5-10d0-4adf-9658-f40b7cf615de.jpg":["Wuffes","Pet","Square"],
+"ad_creative_0240a203-6dc0-42fb-b68d-db1ab0e1ff70.jpg":["Loftie","Tech & Electronics","Story (Vertical)"],
+"ad_creative_0309f6df-0699-4c30-96c7-b35fba3835c0.jpg":["O Positiv","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0354290a-a3ba-4c9a-8d17-517b6c38a28d.jpg":["Lay Day","Apparel & Fashion","Square"],
+"ad_creative_03909bc7-f35a-4c31-8d8d-97d3f09166f5.jpg":["Absolute Collagen","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0394a4dc-a611-4dc3-8c8c-e8018183e7c5.jpg":["Legacy","Health & Wellness","Story (Vertical)"],
+"ad_creative_03989a47-947f-4ae0-b293-777b92c46b30.jpg":["Catalyst","Pet","Square"],
+"ad_creative_03c941ee-4437-4c59-9599-1c3a0bb400b2.jpg":["Litter-Robot","Pet","Story (Vertical)"],
+"ad_creative_044e8dba-896f-43db-84ed-79795e70ecd3.jpg":["Heights","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_04f143e9-d49e-472c-89c5-0fad1cf4dab4.jpg":["Hero Cosmetics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_05098f8b-fb6b-41c6-8797-5979d1ac9614.jpg":["Oat Haus","Food & Beverage","Story (Vertical)"],
+"ad_creative_053e91eb-e011-4887-b92c-63f84f3a1cf2.jpg":["Reef","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_0597751b-dae2-49a2-93bf-6d3a5750305c.jpg":["O Positiv","Health & Wellness","Story (Vertical)"],
+"ad_creative_05d64751-4795-488b-b5da-025cb5f50c4c.jpg":["True Protein","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_07211b80-c283-410f-ae17-ccfc3dd6fd6b.jpg":["Ekster","Jewelry & Accessories","Square"],
+"ad_creative_07c984be-2b7a-43ca-ab91-d1ce2d36995e.jpg":["Stakt","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_07cd6935-9d33-48bc-a131-dd0dbdfef359.jpg":["BBC Sport","Other","Story (Vertical)"],
+"ad_creative_085ed28d-f4f9-4de9-b4c0-f5b807313973.jpg":["Heights","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_087c857e-4629-4ea5-abfc-9a840ba3cb9f.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_08aa8978-9ee5-4c57-a7a8-9ca8eec61591.jpg":["Medicube","Skincare & Beauty","Square"],
+"ad_creative_08ce0588-9442-49c1-a16f-fc1cf2731d66.jpg":["True Botanicals","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_09297ae7-c592-4ad3-9eca-11b1bb337d59.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0957afc5-4cd0-4471-a56f-692dcce90c1f.jpg":["Beardbrand","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_0aab6509-1d86-4d51-bf50-bfa5e784f835.jpg":["Lifeboost Coffee","Food & Beverage","Square"],
+"ad_creative_0b5d258c-fea7-4fc9-b240-8cb4c3e67726.jpg":["Carpe","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_0bcffc42-e9e8-4e1d-b834-a508d6e741cf.jpg":["Dirty Labs","Home & Appliances","Square"],
+"ad_creative_0be26a92-7e8a-4a57-b79f-46a59cfe21d8.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0be2de94-6a3a-4e22-abe3-9492ba7d312d.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_0c534e97-a0c7-4310-bae3-17bf72781891.jpg":["Felix","Health & Wellness","Story (Vertical)"],
+"ad_creative_0c9e58e6-d5d5-4083-b2ee-0fa9d64942a2.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0cdbce84-3b3e-468d-bc32-2a92dd4b92e0.jpg":["Hiya","Supplements & Vitamins","Square"],
+"ad_creative_0ce4a43c-677e-43a4-a0d4-4452cdf6adda.jpg":["Unknown","Other","Square"],
+"ad_creative_0cfe1ba3-27da-40a1-8b8a-3e13fb395256.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0d357679-a498-44dd-b43a-46bcde5f9886.jpg":["Beekman 1802","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_0d3a92a4-c1f7-43d8-87e7-53bc5b5c976b.jpg":["Unknown","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_0d934f66-50bd-4cd3-ba7f-acd45d26a07d.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0daeb6ae-396e-4244-8329-e75608eb4e0d.jpg":["Drowsy","Home & Appliances","Story (Vertical)"],
+"ad_creative_0db5a1a6-f6dc-4350-b4ff-b11ba53da1bc.jpg":["TruHeight","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0e1630bf-a336-4ea7-88ab-1d574652a839.jpg":["Unknown","Food & Beverage","Story (Vertical)"],
+"ad_creative_0ec69297-7212-4bda-abce-8dac44bbc762.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0ee505db-adf9-4d07-9b25-361827f1fe82.jpg":["Pique","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_0ee88422-0865-4f5d-a556-596239eb518b.jpg":["Holden","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_0fbd6b51-8c2a-4f96-a1f5-d44bbb56fb70.jpg":["Native","Hair Care","Story (Vertical)"],
+"ad_creative_100c08f2-5a95-47f4-9777-edbb89ef97f6.jpg":["Unknown","Health & Wellness","Story (Vertical)"],
+"ad_creative_101a125f-6a61-4dee-a039-a9ba8575d25f.jpg":["OluKai","Apparel & Fashion","Square"],
+"ad_creative_104251ce-2ad2-4f30-b45c-2c45f5bd1654.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_108a149c-5e58-4988-bb1c-590f00e30946.jpg":["Catalyst","Pet","Story (Vertical)"],
+"ad_creative_10ebc247-c803-487a-8dc9-35a1df13e04c.jpg":["Reef","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_137e9980-4424-4623-b8dc-2586b174df61.jpg":["Unknown","Baby & Kids","Story (Vertical)"],
+"ad_creative_14fdec54-21cb-457b-a62e-a1baef991053.jpg":["Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_15d40ed6-4ec6-443f-b8ae-b17df19a2275.jpg":["Stubble & Co","Apparel & Fashion","Square"],
+"ad_creative_1607a43a-68ff-4bd0-a4d9-fa338cc6ae73.jpg":["Withings","Tech & Electronics","Story (Vertical)"],
+"ad_creative_172e228a-11af-4b52-a26c-e719ed17d13c.jpg":["MuscleTech","Supplements & Vitamins","Square"],
+"ad_creative_176ef845-345b-4c4d-b0c8-28024034273a.jpg":["Holden","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_17f2f78b-2280-4805-b85b-027e10a6121b.jpg":["Girlfriend Collective","Apparel & Fashion","Square"],
+"ad_creative_180c2f73-3ee1-47c2-9c2b-364c98b1c54c.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_1894925d-a878-4d0c-984b-d3d022578f7d.jpg":["Static Nails","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_19258ce8-48b4-493c-8a6f-7c8ade3158fc.jpg":["Well Verti","Home & Appliances","Square"],
+"ad_creative_19548511-385d-4be0-87f5-ccd97682965b.jpg":["Unknown","Home & Appliances","Square"],
+"ad_creative_1980ae22-a0ea-4853-b72a-dfa91c9419d4.jpg":["Mott & Bow","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_1a5f13ff-ab15-47d4-ab28-c96e501c6c5f.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_1ab5e9fe-9f4e-4209-a404-9d14a5076dcb.jpg":["Loftie","Tech & Electronics","Square"],
+"ad_creative_1b209e14-9963-41c4-a6a5-df36a29e1f6c.jpg":["Ilia","Skincare & Beauty","Square"],
+"ad_creative_1b9537db-ca2f-433f-8f80-d3ffcd5d40f7.jpg":["Monkey Method","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_1bb4b2d5-7996-46ba-a270-bc47feb6630b.jpg":["Vitable","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_1cfe6ee2-5638-46e0-9156-1bc2c7607856.jpg":["Molly's Suds","Home & Appliances","Square"],
+"ad_creative_1d006739-6692-4028-be52-c945db46f563.jpg":["Heights","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_1d4a92be-4128-4461-8df4-25eec7d21003.jpg":["Bulk","Supplements & Vitamins","Square"],
+"ad_creative_1d6c9a10-2e5d-421c-b8c9-e302eaa7db96.jpg":["OluKai","Apparel & Fashion","Square"],
+"ad_creative_1dd7d868-c6d2-41b8-9047-a22303ccdffe.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_1eab5b54-0919-4013-9cd4-ed58243d9c08.jpg":["Wild Dose","Supplements & Vitamins","Square"],
+"ad_creative_20b0fa5f-6291-4534-87c9-7fd09afa8988.jpg":["KatKin","Pet","Story (Vertical)"],
+"ad_creative_231ec126-114e-4428-83e3-2b24742f9f40.jpg":["47 Skin","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_241eb2ac-a8c4-4a31-9b8e-4ddf186fd23f.jpg":["Catalyst","Pet","Square"],
+"ad_creative_2452357e-d893-4e41-94e6-737e053bfba0.jpg":["Sprints","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_24dbbbc6-3c42-423c-a836-ae4e6141453d.jpg":["Litter-Robot","Pet","Story (Vertical)"],
+"ad_creative_255dbc2c-fef8-4032-bbb3-42be7cd3e0bc.jpg":["Pacsafe","Apparel & Fashion","Square"],
+"ad_creative_268e835e-6307-4b05-b4ed-14c7c2d9a487.jpg":["tbh","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_26ff7862-c7f9-44b6-a4c4-27ee24849774.jpg":["Wild Dose","Supplements & Vitamins","Square"],
+"ad_creative_27337bcb-ed6e-44e8-962b-d7eb3493081e.jpg":["HigherDose","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_27a6fa23-76e0-4c57-85ed-a14f7ca5eb72.jpg":["Modern Mammals","Hair Care","Square"],
+"ad_creative_27bc755c-00d3-46eb-bf89-19e3b208ecc3.jpg":["Joyride Harness","Pet","Square"],
+"ad_creative_28372cf1-a52d-4672-a241-d99316e4fb08.jpg":["Liquid Death","Food & Beverage","Story (Vertical)"],
+"ad_creative_283d01b9-8f46-45e4-bf87-c2453cbb7468.jpg":["Jolie","Home & Appliances","Story (Vertical)"],
+"ad_creative_28bc843b-d4f4-45cd-a87e-0af6c07f8a52.jpg":["Carpe","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_295bcc20-f34a-4a26-9b30-db85a1e5d1f0.jpg":["Unknown","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_2aad2000-9250-436f-ae86-857413f3a500.jpg":["LMNT","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_2ae0ce2b-cb5a-4ae2-9fca-057c27d85152.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_2c05ce30-e266-48ea-bc8e-dad5fc42eff5.jpg":["Four Sigmatic","Food & Beverage","Square"],
+"ad_creative_2c98bc5f-4e31-4881-a3ac-39badaed9665.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_2d40f046-bee4-4ba1-b7f1-1b4343c5adb8.jpg":["Reef","Apparel & Fashion","Square"],
+"ad_creative_2dd57f85-7d7d-4ae7-9ea9-7105c876e082.jpg":["Unknown","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_2e7de3ba-103a-449f-acfe-fe013bc36d3c.jpg":["Birddogs","Apparel & Fashion","Square"],
+"ad_creative_2f79c683-5078-4f6f-966e-983a836dfb53.jpg":["KatKin","Pet","Square"],
+"ad_creative_2f9d7946-9a56-40b5-bbcd-c7d0aa8287aa.jpg":["Inno Supps","Supplements & Vitamins","Square"],
+"ad_creative_2fba2a26-9ed4-468d-bb65-d0e84455ab8f.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_3096f175-de3f-4179-bc1e-8a161e3b19d2.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_30c4de55-e74a-4e8a-a1dd-40458b79eec3.jpg":["KatKin","Pet","Story (Vertical)"],
+"ad_creative_31104e8a-5db2-4d83-8739-a9998c821836.jpg":["KatKin","Pet","Story (Vertical)"],
+"ad_creative_31256bf3-f27f-4ac7-b4d7-1e196e7ca205.jpg":["Broya","Food & Beverage","Square"],
+"ad_creative_31e9c158-609a-4466-bc3b-fb8b3d97759c.jpg":["Away","Apparel & Fashion","Square"],
+"ad_creative_32a84ac6-4a3c-4c62-917e-0f5e85b04cc8.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_32f52886-ba0f-47f6-9e37-fbcb785e47c7.jpg":["Truvani","Supplements & Vitamins","Square"],
+"ad_creative_33efeb61-0948-432c-9fbf-9d219d4dfeba.jpg":["Surreal","Food & Beverage","Story (Vertical)"],
+"ad_creative_343a212d-e92f-47e1-a20e-ca3d5c17dd5f.jpg":["Promix","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_35313aab-0f48-4ab8-9144-3ac2ad362724.jpg":["Snif","Home & Appliances","Square"],
+"ad_creative_35407d27-4120-4949-85dd-f25f8a7d96d2.jpg":["MuscleTech","Supplements & Vitamins","Square"],
+"ad_creative_35dae61f-1fc4-4aab-bde5-cda57832bb8d.jpg":["Nodiee","Baby & Kids","Story (Vertical)"],
+"ad_creative_36991c9d-f13f-4648-8bc7-6c9fcf8df1e4.jpg":["Asarai","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_36a52f65-fa52-4880-8a46-30693d7999b9.jpg":["Unknown","Food & Beverage","Story (Vertical)"],
+"ad_creative_372e9f83-3245-49c1-9771-34186365af32.jpg":["Unknown","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_374e1d3f-a67f-465d-8023-029bf602951e.jpg":["Kizik","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_380178c4-bb70-426b-9350-cfede3de3d50.jpg":["Medicube","Skincare & Beauty","Square"],
+"ad_creative_39e25ab9-8cc4-4e48-9195-3d12a6a5e93c.jpg":["immi","Food & Beverage","Story (Vertical)"],
+"ad_creative_39e2f2da-47c4-44e0-886a-7173b0500ee6.jpg":["Finisterre","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_39f72c06-ec90-49a3-8aeb-ae41409ff51a.jpg":["Cuure","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_39ffcfcd-04d2-4a16-bac0-0e335974d122.jpg":["Momcozy","Baby & Kids","Square"],
+"ad_creative_3a64c1eb-27a9-4e31-a2a1-88774d2f3574.jpg":["Unknown","Pet","Story (Vertical)"],
+"ad_creative_3a7eb439-d4ee-46db-ac3b-da20b22e9d57.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_3aac006a-c45f-45a2-85d0-3dfdcbec497a.jpg":["Wild Nutrition","Supplements & Vitamins","Square"],
+"ad_creative_3af23bb4-eb7e-486a-8d7c-4419a283c2d2.jpg":["Drowsy","Home & Appliances","Story (Vertical)"],
+"ad_creative_3afdc6a7-2146-4b23-920f-eb23ba74ff11.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_3b861ec1-e392-4d76-b95f-6ddae413ecf9.jpg":["Big Barker","Pet","Story (Vertical)"],
+"ad_creative_3b8db9ab-2f7c-4576-8012-a2848abf4aac.jpg":["BruMate","Home & Appliances","Story (Vertical)"],
+"ad_creative_3c29701c-d195-4c59-91e3-7157b776e066.jpg":["Beardbrand","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_3d8abb3c-8a02-4ab2-84d8-c24034a0f703.jpg":["Nutrafol","Hair Care","Story (Vertical)"],
+"ad_creative_3e1c244d-93af-4a06-83bf-0f148009842b.jpg":["Catalyst","Pet","Square"],
+"ad_creative_3efe8786-e29f-412e-89f6-d7d42d308eca.jpg":["Blume","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_3ff95c69-b452-4022-a50e-dfca58971b8e.jpg":["Peak Design","Tech & Electronics","Story (Vertical)"],
+"ad_creative_403d686d-0b64-46db-9003-9225cebf8bfa.jpg":["Manta Sleep","Health & Wellness","Square"],
+"ad_creative_404fa7b2-a405-4c09-858d-b6e10649d985.jpg":["Oats Overnight","Food & Beverage","Story (Vertical)"],
+"ad_creative_4062a12c-edee-43a6-aa95-b17df7a3a5d8.jpg":["Bulk","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_413d29ca-04e0-4b49-87e7-8e5990e6d129.jpg":["De Soi","Food & Beverage","Square"],
+"ad_creative_41fd6946-d25c-46af-9282-9d74b3bc7fb2.jpg":["Kizik","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_42582684-fde6-403b-b63f-74e71fddbf01.jpg":["Hilma","Supplements & Vitamins","Square"],
+"ad_creative_426c935b-6a2e-4d6b-921a-6427a51cd8df.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_4291b5ac-f540-4ce9-8d26-fd0fcd35f5b1.jpg":["Ilia","Skincare & Beauty","Square"],
+"ad_creative_43250554-6204-459f-a4fa-60d800d1a3e2.jpg":["Music Shield","Tech & Electronics","Square"],
+"ad_creative_43d9e84c-207a-4851-94ad-e6ea4a4a2729.jpg":["Heights","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_448abc2c-1fd7-426a-9f07-73b1360e59aa.jpg":["Well Verti","Home & Appliances","Story (Vertical)"],
+"ad_creative_44aee979-fcc9-4947-b901-da3a8759ed06.jpg":["Wild Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_44c354cf-4066-4c21-b52a-835ab514ca3f.jpg":["O Positiv","Health & Wellness","Story (Vertical)"],
+"ad_creative_45175c23-b654-4c71-b17a-15cdb1c0484f.jpg":["Flint and Tinder","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_457e6bcf-c822-4c68-ab18-08c56e882aaf.jpg":["Medicube","Skincare & Beauty","Square"],
+"ad_creative_45e301fa-7aae-4098-a0dc-860de5b61f41.jpg":["KatKin","Pet","Square"],
+"ad_creative_46d58595-4142-4cea-bdf9-6927bd4db15d.jpg":["Bulk","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_46ed99f4-e8b5-44c3-821b-b4708f686ff6.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_472ba9ad-58cd-4f2f-8749-651e729d1b9f.jpg":["Gruns","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_47941151-a407-4df2-9516-daf054afb36a.jpg":["RYZE","Food & Beverage","Square"],
+"ad_creative_49588c6d-8a32-4557-8acb-26cf74f2e8f5.jpg":["Absolute Collagen","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_49745ddb-6e55-423f-8a5a-173ff74c860c.jpg":["Nodiee","Home & Appliances","Square"],
+"ad_creative_498af91e-581d-4d2f-89ef-4212d232ea0f.jpg":["Indulge Freely","Food & Beverage","Story (Vertical)"],
+"ad_creative_4998a990-ec1c-41b1-a26a-60f80f39497e.jpg":["Pique","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_49bf2afe-7a92-4f37-82ce-91f7aa7f0764.jpg":["Momcozy","Baby & Kids","Square"],
+"ad_creative_49d1716c-4d95-433c-8482-c86181792ed4.jpg":["Nutrafol","Hair Care","Story (Vertical)"],
+"ad_creative_49f227b1-3fd8-4eec-a502-92cd4c3d65a1.jpg":["Bulk","Supplements & Vitamins","Square"],
+"ad_creative_4a199706-3ea7-49ab-b8f4-1fbf7763aebd.jpg":["Pet-Pourri","Pet","Story (Vertical)"],
+"ad_creative_4a2858cc-f1b7-450e-b9dc-b8bbc0da90da.jpg":["Catalyst","Pet","Square"],
+"ad_creative_4a50a155-ac50-40ba-a4c3-601da9cfa5c9.jpg":["Reef","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_4a5ebf06-8e16-41c9-81f5-62c64b3e9a5f.jpg":["HigherDose","Health & Wellness","Story (Vertical)"],
+"ad_creative_4b2fd84e-42d0-435c-8baa-4f77d82e06c8.jpg":["Beardbrand","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_4b302302-6ff4-4b73-b6d4-345b52dd7811.jpg":["Abbott Lyon","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_4b333d26-b947-4734-aa32-4b846a79edf0.jpg":["Catalyst","Pet","Square"],
+"ad_creative_4b3635c6-e835-4c84-95c7-072a9e912716.jpg":["LMNT","Food & Beverage","Story (Vertical)"],
+"ad_creative_4b4db7be-592d-4644-86b7-76c9ef5717ea.jpg":["The Black Stuff","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_4b55c82b-3e97-459b-ae2a-9b3fd84e730b.jpg":["Cheeky","Oral Care","Story (Vertical)"],
+"ad_creative_4b92bf3e-a77c-40dc-9a3d-084d754f6ea8.jpg":["Big Barker","Pet","Story (Vertical)"],
+"ad_creative_4c27f394-8e27-4415-b210-dfeb4cdae2d5.jpg":["Birdie","Tech & Electronics","Story (Vertical)"],
+"ad_creative_4c5dcd56-6d27-4d2b-bb1e-9fcc0f79d1f5.jpg":["Hiya","Supplements & Vitamins","Square"],
+"ad_creative_4cab3b84-9d4e-48c4-9217-078b5e00e901.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_4ce47fff-5a7c-4e7d-b094-bba5861b97c6.jpg":["Trtl","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_4cec1076-b5bb-4d41-a41e-26fe4b75e9c9.jpg":["Hers","Hair Care","Story (Vertical)"],
+"ad_creative_4f00a5e4-5306-4b46-ba32-09f00b1cb813.jpg":["Public Rec","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_5024b483-30c8-49cc-b538-9877fa9615f3.jpg":["DrinkAid","Supplements & Vitamins","Square"],
+"ad_creative_502a0385-9e68-4b26-be77-8ace254f9562.jpg":["RoseSkinCo","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_50324cc9-25b5-4267-bb40-f1dadf481525.jpg":["Snuggs","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_5147ab4a-559d-4bd5-8f95-95858b0721e1.jpg":["TruHeight","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_52026e45-3f6c-499f-84d5-2f24077d152a.jpg":["Unknown","Pet","Square"],
+"ad_creative_52160cf6-d45d-4736-9e07-71aac3352577.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_52219258-9410-46f5-b330-705955439f6d.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_5266ec66-a770-4242-a4ea-973cbc2bf733.jpg":["Trtl","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_52a8e5b1-b17f-49f6-a4ab-c51511c4e890.jpg":["Static Nails","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_53346013-031e-49c7-a30e-98f3f5b7b9a2.jpg":["Cuure","Supplements & Vitamins","Square"],
+"ad_creative_53558577-1382-4c16-a48b-b00d0ad09110.jpg":["O Positiv","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_53fa2a9a-2fb6-4ed5-9e58-741d517fccf1.jpg":["Drowsy","Home & Appliances","Story (Vertical)"],
+"ad_creative_5415e282-8839-4f30-93a3-902cc0e35cb4.jpg":["Unknown","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_542b91b4-c8cc-439c-a8c1-bdd8d855f315.jpg":["goodr","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_544c6d39-f583-45d3-8a8a-8237e7269f4f.jpg":["Reef","Apparel & Fashion","Square"],
+"ad_creative_5472337b-1750-4289-8ef8-0bf1e2fd4905.jpg":["Dollar Shave Club","Skincare & Beauty","Square"],
+"ad_creative_5508e6f3-785d-4170-9934-35c5e052e1e2.jpg":["Shapermint","Apparel & Fashion","Square"],
+"ad_creative_55341d3d-42f9-4978-af2d-b8f51f1d5958.jpg":["Withings","Tech & Electronics","Story (Vertical)"],
+"ad_creative_563ef4a7-b97d-437d-be4c-00e9a932ccc7.jpg":["Surreal","Food & Beverage","Story (Vertical)"],
+"ad_creative_56b6cbc5-47f4-47bc-bcc5-07e2469583dc.jpg":["Humantra","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_56d69ff9-2b5a-4b3d-adbf-370976c83930.jpg":["Bodied","Food & Beverage","Square"],
+"ad_creative_579d4c39-58a6-4f6d-aff3-3a63649596fc.jpg":["Zing","Oral Care","Story (Vertical)"],
+"ad_creative_58755ae7-aa37-48a2-9a91-ed8d28867c15.jpg":["TruHeight","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_58d50514-4d21-4d25-90db-83a761537a4d.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_59b4038e-b601-4c23-b0a5-5de42329cf15.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_59be67fa-9844-465b-9702-60bc3021d783.jpg":["Broya","Food & Beverage","Story (Vertical)"],
+"ad_creative_59c6b5db-b0c6-4bb1-9812-b3c24dae7751.jpg":["The Conscious Bar","Food & Beverage","Story (Vertical)"],
+"ad_creative_5a6b58e4-19d9-41d0-bb20-d3ba722cec2c.jpg":["Unknown","Home & Appliances","Square"],
+"ad_creative_5b37b72b-f43a-4273-9e81-346d9e4b7269.jpg":["Indulge Freely","Food & Beverage","Square"],
+"ad_creative_5b3e1562-cdf8-4e50-9738-50434fbc0e26.jpg":["De Soi","Food & Beverage","Square"],
+"ad_creative_5b4f23a1-1487-4328-a176-e43d3e0fed36.jpg":["Rheal Superfoods","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_5c7e1863-57e9-4ea8-b1db-ff872ba3bba5.jpg":["Portland Pet Food Company","Pet","Story (Vertical)"],
+"ad_creative_5cb124ea-3096-4145-a10d-8a991fff792a.jpg":["True Protein","Supplements & Vitamins","Square"],
+"ad_creative_5dbeddf6-7450-43da-b124-59e6e83ff2bb.jpg":["Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_5e249184-2e68-4c25-b3e9-8653e0ff606d.jpg":["Withings","Tech & Electronics","Story (Vertical)"],
+"ad_creative_5f2c3a78-e3ef-4466-b25b-db5042f045c8.jpg":["Spindrift","Food & Beverage","Square"],
+"ad_creative_5fc25897-e342-4727-81bb-a785bd6731ee.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_60ec35de-e9ff-4099-84e1-fc5f1c597a5c.jpg":["SheFit","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_618b9bad-6626-4c72-9039-a04961b4e2e7.jpg":["Newton","Baby & Kids","Story (Vertical)"],
+"ad_creative_61e355aa-1188-4600-a5ad-72ad60cb3832.jpg":["Rheal Superfoods","Supplements & Vitamins","Square"],
+"ad_creative_623402d3-edc0-4164-9624-793c8f59f2e1.jpg":["FitJeans","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_62a71850-4582-46af-ad29-ac5f41246bab.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_62c24c0a-d3af-47a5-a420-f80ed5e425f1.jpg":["Qure","Skincare & Beauty","Square"],
+"ad_creative_62e0c8e6-efcc-4993-bec2-0698e409766c.jpg":["Bruvi","Home & Appliances","Square"],
+"ad_creative_638f8457-76e0-4dd9-856c-52414b6b931d.jpg":["Serenity Kids","Baby & Kids","Story (Vertical)"],
+"ad_creative_63a74b79-cabb-41bb-8274-037e4af61f8a.jpg":["Nice Laundry","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_63d109a2-9a75-4fda-adfe-93e1e6af536c.jpg":["Unknown","Health & Wellness","Story (Vertical)"],
+"ad_creative_63e08ffa-c0a2-46f8-8afb-0dcf3e972a29.jpg":["Dash Water","Food & Beverage","Story (Vertical)"],
+"ad_creative_650a7b2e-6165-4841-a28c-656f2e93b1ea.jpg":["DIRTEA","Food & Beverage","Story (Vertical)"],
+"ad_creative_650bb056-a422-45a3-821f-021ca0752423.jpg":["Nutricost","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_652075f6-0537-4269-9258-1b17b49caed3.jpg":["MuscleTech","Supplements & Vitamins","Square"],
+"ad_creative_6543097c-fb1e-4751-884b-cf976276dd53.jpg":["Surreal","Food & Beverage","Square"],
+"ad_creative_65c225a9-8d03-4883-981d-04ef73c1348a.jpg":["Carnivore Snax","Food & Beverage","Story (Vertical)"],
+"ad_creative_65f54823-eea3-4ea4-8dd1-6da49a7dd451.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_66ac411f-d660-4001-ba88-a0a7581a3de7.jpg":["Unknown","Oral Care","Square"],
+"ad_creative_66be189f-f324-4e21-b9e1-0ad90ec6c778.jpg":["Trtl","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_67309b77-1960-497c-8c03-e3a8a61bfd03.jpg":["Suja","Food & Beverage","Story (Vertical)"],
+"ad_creative_675be428-dcc9-4578-a07b-519133f0b4bd.jpg":["Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_6921b13e-f9b6-435e-b417-de5603759301.jpg":["Humantra","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_6926175e-a502-4254-a859-f87d91c3924e.jpg":["Normatec","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_69527345-26c8-45ec-b5b0-a994d982442c.jpg":["AgeMate","Supplements & Vitamins","Square"],
+"ad_creative_6998e60c-4f7e-40d8-b12e-4abc00b76b75.jpg":["AgeMate","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_6a3be681-df24-49f0-b6c4-47d2b229ae4e.jpg":["EWG","Health & Wellness","Square"],
+"ad_creative_6ad76ba0-f192-46e9-b179-1524153778ef.jpg":["Humantra","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_6b50c80a-a50c-4e97-9833-6d3605bbb3f5.jpg":["Original Grain","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_6bdf44a4-3b99-4984-9960-7a68ec20639e.jpg":["Peak Design","Tech & Electronics","Square"],
+"ad_creative_6c258d88-4d87-4b47-831a-74733f8dabd6.jpg":["JSHealth","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_6c30dda7-2403-45ce-aa91-8d0b2f464b13.jpg":["Liquid Death","Food & Beverage","Story (Vertical)"],
+"ad_creative_6c859044-50cf-4e38-b0ed-a9569289faba.jpg":["The Conscious Bar","Food & Beverage","Story (Vertical)"],
+"ad_creative_6d509aba-e521-466b-9b81-071bfdecd391.jpg":["Bird&Be","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_6d71994b-c645-4d81-bbf3-7dc6cac54cc5.jpg":["Humantra","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_6e00971b-13a8-4e0a-8ea5-f9963e844de6.jpg":["Kulfi","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_6e1e22b9-5662-4514-8121-0d0a85a16763.jpg":["Bodied","Food & Beverage","Story (Vertical)"],
+"ad_creative_6e76b468-f687-4db0-a673-64f83cafad41.jpg":["Blissy","Home & Appliances","Story (Vertical)"],
+"ad_creative_6e8de203-4031-4c6b-b3bb-6d41e5a18498.jpg":["Blissy","Home & Appliances","Story (Vertical)"],
+"ad_creative_7057e179-e705-4bb3-b315-941d52f928dc.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_707248e2-da6e-46da-b4fb-4dfa5d40ac7d.jpg":["Well Verti","Home & Appliances","Square"],
+"ad_creative_70857665-d19f-4235-9631-35dac9869214.jpg":["DrinkAid","Supplements & Vitamins","Square"],
+"ad_creative_708d4b59-b67b-4ff2-b52e-fcab2915f6f6.jpg":["Phizz","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_71270372-7b8d-4fd6-93e3-7c8e97ab892c.jpg":["Wild Nutrition","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_72380e0f-21f2-4cda-9420-dda50823fa8f.jpg":["Flint and Tinder","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_729f0f68-4f30-45fc-89bd-cfe1d4b0d24d.jpg":["Stakt","Fitness & Equipment","Square"],
+"ad_creative_72e24d80-c125-4c80-9712-24650b44e8c3.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_733b0aa2-fec4-4d07-83e4-4c65dcaa78ad.jpg":["Stakt","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_73f0ad24-1c58-4254-8d88-7f6f97bb644c.jpg":["Unknown","Jewelry & Accessories","Square"],
+"ad_creative_7477ac81-3aa4-40ca-8e70-f433a11ebf5d.jpg":["Catalyst","Pet","Square"],
+"ad_creative_75261962-e490-450d-b228-61d367672227.jpg":["Carpe","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_762aa9d0-c124-4d17-beaa-516074e84d5e.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_7639ab60-9df1-408c-9818-201b41197884.jpg":["Typebea","Hair Care","Story (Vertical)"],
+"ad_creative_76683375-5b7a-49c3-b3a7-42c925172bbd.jpg":["Kulfi","Skincare & Beauty","Square"],
+"ad_creative_784c66f7-a4d0-4d8e-a4e2-4a44d4bd7160.jpg":["Alo","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_78a7d76a-5a7b-4f1e-a6ae-f47751055e5d.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_7907b0d1-903c-4812-b60a-163c44441ee2.jpg":["Sassy Saints","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_79159ab4-c8a8-446c-a877-566bfaec9eaa.jpg":["Pique","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_7978aaf1-3a4f-4c75-b830-042f59508f82.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_79f58093-9a35-4703-8f1f-7b92b96e38e7.jpg":["Mars Men","Supplements & Vitamins","Square"],
+"ad_creative_7acc4e20-61f1-4ad9-a2aa-b034ec4e3f80.jpg":["Flint and Tinder","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_7b2b13fa-4733-4df3-ae45-a3f0348e4ae3.jpg":["True Protein","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_7b886b1c-e692-4f03-8647-4d027c3bc2a7.jpg":["Drowsy","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_7b976e7e-6558-4e1c-9065-42cb8e863a11.jpg":["The Conscious Bar","Food & Beverage","Square"],
+"ad_creative_7c4688df-e705-4c50-ae88-ef500b3b0f8f.jpg":["UPPAbaby","Baby & Kids","Square"],
+"ad_creative_7c9b00eb-6589-4a65-a356-21b1703b0f48.jpg":["Cuure","Supplements & Vitamins","Square"],
+"ad_creative_7cd88f97-470d-41ab-b789-bf839e668390.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_7d833f9c-cc95-4986-a150-b41e41bc79ef.jpg":["BruMate","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_7f01b53f-adaf-47ae-bd22-508eadbe5cb8.jpg":["Tropeaka","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_7f98598d-fc71-4218-a232-5944bdc74bd1.jpg":["The Conscious Bar","Food & Beverage","Story (Vertical)"],
+"ad_creative_80363144-0b66-4da8-b4e1-0631a0437216.jpg":["Arrae","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_803771ef-f724-4266-89dd-b9d1343355dd.jpg":["Lifeboost Coffee","Food & Beverage","Story (Vertical)"],
+"ad_creative_8088a761-a966-4f0a-9591-6d0bd63d1d69.jpg":["8Greens","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_80b883db-9866-4885-9af5-9a5be0435c83.jpg":["Medicube","Skincare & Beauty","Square"],
+"ad_creative_80e97b97-f2be-4bdd-b2a5-b0377e7507b8.jpg":["Sand & Sky","Skincare & Beauty","Square"],
+"ad_creative_814baa30-6a63-48e5-aaa3-e57e953c159e.jpg":["Beardbrand","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_8157459a-d1ff-43a7-a79a-dd5cc49194e7.jpg":["8Greens","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_818c4ee8-23cf-4017-889a-ec89ccbb0f28.jpg":["Molly's Suds","Home & Appliances","Square"],
+"ad_creative_819b4c5f-a594-4246-99de-aef8dcf87f9a.jpg":["Coway Airmega","Home & Appliances","Story (Vertical)"],
+"ad_creative_81aa60ef-91d6-4120-9615-963070bc5a9e.jpg":["O Positiv","Health & Wellness","Story (Vertical)"],
+"ad_creative_82018e19-d583-4451-96bb-7c49ec0aa525.jpg":["Dirty Labs","Home & Appliances","Square"],
+"ad_creative_825a7092-b0ca-4b7e-97c1-3fb722b10827.jpg":["Our Place","Home & Appliances","Story (Vertical)"],
+"ad_creative_82cc67f1-4c7e-41d2-965e-52ba08ac577a.jpg":["Mid-Day Squares","Food & Beverage","Square"],
+"ad_creative_82f86487-a3bd-4bd8-8ff1-9fe6b8964867.jpg":["Truvani","Supplements & Vitamins","Square"],
+"ad_creative_8360af76-99c6-4456-8888-9a5a99e0445d.jpg":["Hers","Hair Care","Story (Vertical)"],
+"ad_creative_837fb621-c39e-4834-b213-e34386822234.jpg":["Molly's Suds","Home & Appliances","Square"],
+"ad_creative_83c677dd-50d0-455c-9dc0-4e3778cb591a.jpg":["Newton","Baby & Kids","Story (Vertical)"],
+"ad_creative_84175531-b2c0-40e4-b9cc-86786c5e2d9c.jpg":["goodr","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_8489d7eb-6a4e-432b-a4ae-16fb18bc115c.jpg":["Vitable","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_850905c2-297a-4d92-845a-cc6afb10ddf7.jpg":["Unknown","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_859c9dd2-662e-417e-b1b2-a702978f531a.jpg":["Hero Cosmetics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_85e30224-637b-47ea-8dc3-9663b3afc3fc.jpg":["Bruvi","Home & Appliances","Square"],
+"ad_creative_88a95bb8-265a-49ee-a6dc-db46cc5672fd.jpg":["Asarai","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_88e933b9-4373-4e91-affd-e5e948671c3e.jpg":["Pique","Food & Beverage","Story (Vertical)"],
+"ad_creative_89ad6ff8-e599-497a-a74c-0d560dfd3026.jpg":["Wild Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_89b2bb8e-1e39-4273-a20e-ae9267bd8a86.jpg":["Withings","Tech & Electronics","Story (Vertical)"],
+"ad_creative_89c37ee8-a356-4c11-974c-8bcf75acc321.jpg":["Hiya","Baby & Kids","Square"],
+"ad_creative_8b6753a6-3774-477d-8e61-1247aa1263d9.jpg":["Kora Organics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_8ced2180-b46a-4368-81f0-3842472b268e.jpg":["Unknown","Fitness & Equipment","Square"],
+"ad_creative_8dbb93b3-4047-445f-9cda-3ad799c6fe52.jpg":["The Conscious Bar","Food & Beverage","Story (Vertical)"],
+"ad_creative_8e1e34e6-7d4a-4ed6-937f-9d08cee33203.jpg":["Neuro Gum","Supplements & Vitamins","Square"],
+"ad_creative_8e75fca1-7920-404a-afbe-a56745102c04.jpg":["JSHealth","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_8eb57a4a-910b-4486-bbce-66f1bda150ff.jpg":["Arrae","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_8f0c2f66-0807-4e41-9919-2eec7eeeca1f.jpg":["Static Nails","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_8f4ed9a1-7da2-4ce7-bc14-cfead7cb674b.jpg":["Hanacure","Skincare & Beauty","Square"],
+"ad_creative_8f737620-0149-473a-a9d3-173e2373c6fd.jpg":["Ekster","Jewelry & Accessories","Square"],
+"ad_creative_8fae8f52-321a-4e9f-8424-7e0a3f8e92ea.jpg":["Unknown","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_8fcdd422-1b48-427d-948d-ece98367aae5.jpg":["Wild Nutrition","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_91612fa6-9f6d-43d9-b4d2-3c4ad81d322f.jpg":["Gruns","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_91baec55-b1cb-493a-807b-d81e5fa53919.jpg":["Promix","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_92be1bc4-d410-4189-b6fd-2f6d6c99dc55.jpg":["Kora Organics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_92d4618c-c8c1-4cae-92ea-7124134df37d.jpg":["Lifeboost Coffee","Food & Beverage","Square"],
+"ad_creative_94775eec-5697-4493-bc99-9914f9f61369.jpg":["Unknown","Home & Appliances","Story (Vertical)"],
+"ad_creative_9480c314-a4c6-4a2b-9811-d606072664e9.jpg":["Native","Hair Care","Story (Vertical)"],
+"ad_creative_94a959a3-4e68-4f20-b3dd-3fa18e1e60dc.jpg":["JSHealth","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_95aec9d7-0064-4e46-b59e-9d8829324d39.jpg":["The Honey Pot","Health & Wellness","Story (Vertical)"],
+"ad_creative_960aaa29-5aed-41e6-b3ec-f692702d638d.jpg":["Nutricost","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_96f65e4b-a76c-4421-8086-e9bac825b7c1.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_97fc1d70-11b3-43b5-a93e-fcc3ee94879b.jpg":["Blume","Skincare & Beauty","Square"],
+"ad_creative_9c084c40-a624-47eb-a1f0-36451f6880ef.jpg":["Nutrafol","Hair Care","Story (Vertical)"],
+"ad_creative_9c1a23ee-1b9b-422c-b90d-e357091ece89.jpg":["Pique","Food & Beverage","Story (Vertical)"],
+"ad_creative_9c85398e-53a0-4d14-88e0-b019e48e9a46.jpg":["Hiya","Supplements & Vitamins","Square"],
+"ad_creative_9cd33c3d-9f12-40c1-9699-095418dba06e.jpg":["Ekster","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_9cfb6c9b-2209-43f4-811d-09c85a870247.jpg":["Dad Gang","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_9d1aee84-f1c0-41bf-bb25-915da02c20bd.jpg":["Routs","Food & Beverage","Square"],
+"ad_creative_9d37fd6a-1396-4963-b735-d55a232630ab.jpg":["HexClad","Home & Appliances","Square"],
+"ad_creative_9df378bc-690d-4598-af0e-20458c51778a.jpg":["Truvani","Supplements & Vitamins","Square"],
+"ad_creative_9e92dfef-4809-4bee-879a-a0d02add3a35.jpg":["TruHeight","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_9ea58d0d-2f70-48a4-b51e-1688afcc1699.jpg":["Unknown","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_9fbdfb7a-1c63-4c2d-809e-66242fd63d69.jpg":["Vitabright","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_a0063bfb-6d06-406d-a6be-eda557a7e842.jpg":["Booster Pro","Skincare & Beauty","Square"],
+"ad_creative_a01b3d5f-928a-4114-b6fc-7043f0f2f4bd.jpg":["Thesis","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_a089f529-b119-41ad-8afe-4812dbfeb46b.jpg":["Canopy","Home & Appliances","Story (Vertical)"],
+"ad_creative_a2b9457f-6472-418d-9d52-817d4508c499.jpg":["Withings","Tech & Electronics","Story (Vertical)"],
+"ad_creative_a346637f-e0be-4789-a4bf-43f8cca03b39.jpg":["Vitable","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_a359f3d5-e51f-4c4e-9635-d71c63ba7ad4.jpg":["PetLab Co.","Pet","Square"],
+"ad_creative_a39dfee6-5c8d-4bb8-9587-c4d93d1ea233.jpg":["Waterdrop","Food & Beverage","Story (Vertical)"],
+"ad_creative_a4a5beaf-5b0a-403e-a351-cfb64e4f59fd.jpg":["Suja","Food & Beverage","Story (Vertical)"],
+"ad_creative_a577f897-6c75-499b-a1a2-c40b18968f3f.jpg":["Broya","Food & Beverage","Square"],
+"ad_creative_a5f672fb-6432-48ed-b67b-0236f426cb1c.jpg":["Dirty Labs","Home & Appliances","Square"],
+"ad_creative_a68a4115-5dd6-44e7-aec4-2776938632ea.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_a6b6f927-e513-4c73-8790-2d10d7933914.jpg":["Rocky Point","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_a859b80b-c1a6-47fc-b0c9-934f5397b085.jpg":["True Protein","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_a8640023-04cb-47d6-9c55-5c4be85ec4e8.jpg":["HigherDose","Hair Care","Square"],
+"ad_creative_a8f89e36-3146-4935-a5ab-a07d50e6a059.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_a9f91b3b-c58f-42fa-a4b5-8d4b6741be7b.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_abb51c44-11c6-4427-ac44-d3e445ff5b39.jpg":["Birdie","Jewelry & Accessories","Square"],
+"ad_creative_abd019d0-3813-480c-9d15-edcdd0a1cf45.jpg":["Blueland","Home & Appliances","Story (Vertical)"],
+"ad_creative_aca9763c-6a7f-44ae-9ca3-1f397351a031.jpg":["Unknown","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_acbed2b1-aac8-47a0-a946-df33d1e1402d.jpg":["Ekster","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_ad5a903a-b0f3-40ca-ae4d-ab58d207c284.jpg":["Primal Queen","Supplements & Vitamins","Square"],
+"ad_creative_ad6f2730-5a89-4887-b8a9-7fd846dd6860.jpg":["Unknown","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_adfdfef5-f4ae-4c2b-9b6d-9cd15f66adf7.jpg":["RoseSkinCo","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_aeb7a5c9-9a1c-4a97-bb9f-e8fb8fb6b9b0.jpg":["Liquid Death","Food & Beverage","Square"],
+"ad_creative_aed20a96-6d9f-4b03-8400-9a711c9dc7fc.jpg":["Vuori","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_aefde372-dce4-4ca8-99aa-bcbb7ecd4d5a.jpg":["Newton","Baby & Kids","Story (Vertical)"],
+"ad_creative_af30cbeb-40da-4d1e-b0c7-417ec9cfd52c.jpg":["Stakt","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_af6b1518-6b15-4798-a07b-e39a1e45f195.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_b00ac946-3fa0-49ec-a897-6bf59438db37.jpg":["Nutricost","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_b192ae82-41dc-44a5-9d65-e0a9526d654f.jpg":["Zing","Oral Care","Story (Vertical)"],
+"ad_creative_b229e220-2b4b-4fcf-861b-00d00d514883.jpg":["Fable","Home & Appliances","Story (Vertical)"],
+"ad_creative_b264e587-2fc5-444f-8fc3-6c8c84d0f77f.jpg":["Nodiee","Baby & Kids","Story (Vertical)"],
+"ad_creative_b337432c-1537-4c60-91c0-4c42108237b1.jpg":["Harry's","Skincare & Beauty","Square"],
+"ad_creative_b3f60ab4-01d2-4b81-ab80-7452266937b5.jpg":["Culprit","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_b3fa9720-3124-4e71-9a4e-89367d705bc0.jpg":["Momcozy","Baby & Kids","Square"],
+"ad_creative_b47e1ccf-20f8-4f79-9d82-1504ecac15d3.jpg":["Kora Organics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_b4a8b107-d7f3-4922-845e-36a086d81d52.jpg":["Drowsy","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_b4ca055e-fdf4-4858-ae69-55de2f30fbed.jpg":["Broya","Food & Beverage","Square"],
+"ad_creative_b537786d-e185-4e01-9117-d8c44aa606de.jpg":["Casely","Tech & Electronics","Story (Vertical)"],
+"ad_creative_b560db48-05c5-40d0-8bd6-11ae346e263e.jpg":["Soda Snob","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_b5d8078d-daec-4dc7-87e7-1ae884def872.jpg":["Unknown","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_b5fa41f6-0b31-4b54-9fe6-2752b7998e62.jpg":["Free Soul","Supplements & Vitamins","Square"],
+"ad_creative_b669c69a-eb75-46b4-8674-a100ae990dcb.jpg":["Unknown","Baby & Kids","Story (Vertical)"],
+"ad_creative_b76c7e47-abee-4425-ba14-edb85b3e5b5e.jpg":["DrinkAid","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_b7d46e74-00a0-4f13-8297-fd92bddab803.jpg":["Fenty","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_b825c848-1103-49e0-8544-6401512bf596.jpg":["Fable","Home & Appliances","Square"],
+"ad_creative_b8b71c95-38e2-46bd-8b46-18568c45c079.jpg":["AgeMate","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_b8b8eb3b-bafd-47c5-8a29-108ab9174561.jpg":["Bodied","Food & Beverage","Story (Vertical)"],
+"ad_creative_ba319759-6ffc-4cc8-90d7-716654a82b87.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_ba94d4f0-2972-44b9-a257-2f3cb9a24492.jpg":["Blissy","Home & Appliances","Story (Vertical)"],
+"ad_creative_bbc66399-c3bb-4dfa-a098-685cb72a1f7d.jpg":["Arrae","Supplements & Vitamins","Square"],
+"ad_creative_bcd83585-46f1-4fc4-bd8f-95db38995608.jpg":["Zing","Oral Care","Square"],
+"ad_creative_bd7e3e42-cee6-4cb5-9ad0-ddbee8deb846.jpg":["Catalyst","Pet","Square"],
+"ad_creative_bdda331c-244e-437b-8357-f265c00846cd.jpg":["Kora Organics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_bded1df5-9a4a-4c1d-a747-16bcffd90d68.jpg":["Nutricost","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_be40ca54-9fb0-4cdb-bf25-598ff0b1ed59.jpg":["Cove","Pet","Square"],
+"ad_creative_bfbf1340-2624-480b-8018-4da979294dbf.jpg":["Suja","Food & Beverage","Story (Vertical)"],
+"ad_creative_c0145ec7-c46d-4768-8e66-ed9643169512.jpg":["Girlfriend Collective","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_c0461d6d-f3da-413a-85e2-9311bbc1fcb1.jpg":["Inno Supps","Supplements & Vitamins","Square"],
+"ad_creative_c0943925-c16d-4ccd-b751-1f8d8261589c.jpg":["Snif","Home & Appliances","Square"],
+"ad_creative_c1986fa9-2fd2-481c-b91e-361f3f23de2a.jpg":["Catalyst","Pet","Square"],
+"ad_creative_c29f085c-097b-44f2-80a6-7ab7d9271774.jpg":["KatKin","Pet","Story (Vertical)"],
+"ad_creative_c2a9ae02-fc70-4c65-8199-723954a704c2.jpg":["Wild Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_c40f9b9c-7f8f-4524-a0b7-2c64c903c8df.jpg":["Hotgrow","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_c4a5585f-ad39-4754-ae2b-500094ba006d.jpg":["Guava Family","Baby & Kids","Square"],
+"ad_creative_c53cbe49-1fdd-4899-b162-3f76283ed7c0.jpg":["Peak Design","Jewelry & Accessories","Square"],
+"ad_creative_c5cce86a-596d-4cd3-bff8-fae88e035b0e.jpg":["Unknown","Oral Care","Square"],
+"ad_creative_c71ad457-4a4d-4d58-a0a5-58aa1acff5bf.jpg":["Beardbrand","Skincare & Beauty","Square"],
+"ad_creative_c797b1b3-d74f-4234-b14c-e3b7fd3b4cb1.jpg":["Dash Water","Food & Beverage","Story (Vertical)"],
+"ad_creative_c806b4c3-13ec-4585-b0f6-610cc715bf1e.jpg":["Promix","Supplements & Vitamins","Square"],
+"ad_creative_c83a5381-e44d-47d6-92f9-2bbf61189bce.jpg":["Bruvi","Food & Beverage","Square"],
+"ad_creative_c85aa648-4f4a-4704-b14f-149f3109dad9.jpg":["Bird&Be","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_c945bda1-b922-4c01-9f4e-e51b93262ee1.jpg":["Vitabright","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_c9507dbe-4ea5-47bf-9a91-7dd36f623ea0.jpg":["Primal Queen","Supplements & Vitamins","Square"],
+"ad_creative_c95a314c-e555-4449-af43-de82ec873eb3.jpg":["Medicube","Skincare & Beauty","Square"],
+"ad_creative_c95cbcf2-259c-4259-a67a-6cde086610c3.jpg":["Unknown","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_c9e866ee-e640-4e40-be8d-5863624ae8ad.jpg":["Wild Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_cb0f1c40-4b68-4fa1-82b1-758a5a3738f4.jpg":["Unknown","Tech & Electronics","Story (Vertical)"],
+"ad_creative_cb16898f-ec6a-4e25-8cfc-1f9f5a654004.jpg":["Wandering Bear","Food & Beverage","Square"],
+"ad_creative_cbeb628a-d495-4dce-9424-d70e87291abd.jpg":["Unknown","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_cc451362-8777-418e-b54c-e4e41293b0c8.jpg":["Hiya","Baby & Kids","Square"],
+"ad_creative_cc459fb9-6dfd-46fd-ad5b-ee5ffd8e1901.jpg":["Liquid Death","Food & Beverage","Story (Vertical)"],
+"ad_creative_cc8a9a9f-da44-4b9b-b950-110f18a80ae8.jpg":["tbh","Skincare & Beauty","Square"],
+"ad_creative_ccff666c-9193-4429-8790-894306a3e044.jpg":["Stakt","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_ce15a54f-8209-463d-b340-2b0dada9fff3.jpg":["AG1","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_ce276de1-f566-485f-8d99-772bcd705172.jpg":["Nutricost","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_ce8d2bbe-2e76-495b-a2d1-e826d4dd0019.jpg":["Blume","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_ced89ee7-366e-49af-ad4e-aa23e0b952b2.jpg":["TRX","Fitness & Equipment","Square"],
+"ad_creative_cf6e7aa0-a310-4ddb-a140-021a59092814.jpg":["AgeMate","Supplements & Vitamins","Square"],
+"ad_creative_cfdcbc34-75f7-4e5e-a272-4fa24e8d71b6.jpg":["Molly's Suds","Home & Appliances","Square"],
+"ad_creative_d061b791-85f4-4c17-943f-19b9e2dd2585.jpg":["8Greens","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_d0807a5b-3015-4142-8e0e-a8a5c8af74bf.jpg":["Zing","Oral Care","Story (Vertical)"],
+"ad_creative_d09c9194-3b5b-40bd-ad75-7c81c13b488c.jpg":["Hers","Hair Care","Story (Vertical)"],
+"ad_creative_d1247134-568b-46c2-8378-e53dd7c06800.jpg":["Nodiee","Baby & Kids","Story (Vertical)"],
+"ad_creative_d163c920-5bbf-4c00-88a9-20b41b72e584.jpg":["Pure Encapsulations","Supplements & Vitamins","Square"],
+"ad_creative_d1d62836-bc24-4de0-a0cd-e083e55ac770.jpg":["Lifeboost Coffee","Food & Beverage","Square"],
+"ad_creative_d35e54be-1a14-4958-938b-5294b4453599.jpg":["goodr","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_d40e6813-d7ce-4c1e-9e69-1fe9b62e86a4.jpg":["Guava Family","Baby & Kids","Story (Vertical)"],
+"ad_creative_d4507b9f-6aab-4dd6-ad3a-467b6e8a3f26.jpg":["Kora Organics","Skincare & Beauty","Square"],
+"ad_creative_d590c1b2-23a2-49f6-af63-f2ecc984503c.jpg":["Dog Friendly Co","Pet","Square"],
+"ad_creative_d5a19b27-e5d3-450d-ae0b-9c041e9aba95.jpg":["Big Barker","Pet","Square"],
+"ad_creative_d60a07d2-655e-48d4-b03c-39a2b1d467b2.jpg":["MuscleTech","Supplements & Vitamins","Square"],
+"ad_creative_d6990e47-175d-4bf7-8071-9c9b96eca0d3.jpg":["Ancient + Brave","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_d6a3eb58-1480-46c7-bcf7-75a9828755d1.jpg":["Momcozy","Baby & Kids","Story (Vertical)"],
+"ad_creative_d71a4b19-d6cd-4ab1-85f7-8b5bd26b2f55.jpg":["TruHeight","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_d785ca01-5979-4c87-a116-6d939ba35ced.jpg":["Carnivore Snax","Food & Beverage","Story (Vertical)"],
+"ad_creative_d939b449-1610-4289-856c-dce017c9b531.jpg":["FitJeans","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_d9a619a8-b6ef-46cc-b28a-92a400cee72c.jpg":["MuscleTech","Supplements & Vitamins","Square"],
+"ad_creative_d9f807e7-9d3a-44ff-950a-92f41e76dcf2.jpg":["Rogue","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_daa29e4c-8a8e-4c5c-94c7-f47ee78ade65.jpg":["Bulk","Supplements & Vitamins","Square"],
+"ad_creative_dad74034-7b54-4960-b334-86f1f819071d.jpg":["Lifeboost Coffee","Food & Beverage","Square"],
+"ad_creative_db7cfcd6-4083-4eec-ba48-e570df89723d.jpg":["Birddogs","Apparel & Fashion","Square"],
+"ad_creative_dc2f8511-5b87-4789-97a9-3747dbc419ba.jpg":["SaunaBox","Fitness & Equipment","Square"],
+"ad_creative_dc6092ef-1829-48bb-9753-20a3c48f24fc.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_dd6516e7-c76b-4920-8ec8-54722b0cc04c.jpg":["Bodied","Food & Beverage","Square"],
+"ad_creative_dd8a63df-c61b-4d50-a275-eba8080b43b5.jpg":["Promix","Supplements & Vitamins","Square"],
+"ad_creative_ddaa3fb0-fb6a-450c-b0c0-26f342aec7de.jpg":["DrinkAid","Supplements & Vitamins","Square"],
+"ad_creative_de09eccd-5c11-45b9-9a85-af2ed576d5ea.jpg":["Portland Pet Food Company","Pet","Square"],
+"ad_creative_de183d94-b050-40e7-bbb3-7113e19a5e7c.jpg":["Humantra","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_de1d9aea-afe3-4455-90d0-59d8170a5f30.jpg":["AgeMate","Supplements & Vitamins","Square"],
+"ad_creative_de7f6e77-dc59-4040-98b5-df8660cf43d1.jpg":["Magic Mind","Food & Beverage","Square"],
+"ad_creative_df8d9670-7554-435f-829d-c54f96887b67.jpg":["Pair Eyewear","Jewelry & Accessories","Story (Vertical)"],
+"ad_creative_dfd51a8d-c29f-4b20-9c64-0eff42ae5b2a.jpg":["Wild Dose","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_dfe90b6c-93d2-495d-828f-9d595b084bce.jpg":["Arrae","Supplements & Vitamins","Square"],
+"ad_creative_dffc2d34-dd77-402d-8c17-3a26cfb88f07.jpg":["Nutrafol","Hair Care","Story (Vertical)"],
+"ad_creative_e23ee24d-3593-47c2-9679-60e974024bf3.jpg":["Big Barker","Pet","Story (Vertical)"],
+"ad_creative_e27cb360-db0a-4cf0-be4e-d7496ba7bf1f.jpg":["AgeMate","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_e38ce362-bd71-463d-bf04-76f44ad76c89.jpg":["Trtl","Other","Story (Vertical)"],
+"ad_creative_e4321235-18a6-4e09-a7aa-4133528a45c8.jpg":["Bruvi","Home & Appliances","Square"],
+"ad_creative_e43d4fce-dea2-4157-a099-0c44a6ea9f2a.jpg":["tbh","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_e4888adf-85b1-4261-ad93-8ce4ed893998.jpg":["Craftmix","Food & Beverage","Square"],
+"ad_creative_e506d734-1cd3-44b3-b087-c241922efedf.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_e6772daa-159c-48a8-9e56-24fb4d526e1b.jpg":["Flint and Tinder","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_e68db02f-7b23-478b-9ed2-ccf7ee731bc0.jpg":["Bruush","Oral Care","Square"],
+"ad_creative_e7ca18c7-87fe-42cd-aa7a-afcef6322129.jpg":["Tonal","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_e8135a9c-e3fd-4c56-98de-813f9a315aff.jpg":["Blissy","Home & Appliances","Square"],
+"ad_creative_e8360706-5157-455f-aa41-0863afed5559.jpg":["Serenity Kids","Baby & Kids","Story (Vertical)"],
+"ad_creative_e84c06b7-e887-4978-aa76-709ee0d45251.jpg":["Kizik","Apparel & Fashion","Story (Vertical)"],
+"ad_creative_e8993f0b-71e1-4ff5-b81b-fd5890c6eafe.jpg":["Nutrafol","Hair Care","Story (Vertical)"],
+"ad_creative_e8dd5b18-8c69-4871-bb78-e3c5ebd886a5.jpg":["Harmless Harvest","Food & Beverage","Square"],
+"ad_creative_e8e3b12d-4239-4a07-9b64-1bb60c6c7f43.jpg":["Harry's","Skincare & Beauty","Square"],
+"ad_creative_eae56e39-6caf-4715-ac67-f9dc56635d4c.jpg":["Carnivore Snax","Food & Beverage","Story (Vertical)"],
+"ad_creative_eba68fed-d0e0-4e81-8527-5c1709cd2bb5.jpg":["Primal Queen","Supplements & Vitamins","Square"],
+"ad_creative_ec07d9ff-c951-4155-888c-1c9fdab43dca.jpg":["Unknown","Skincare & Beauty","Square"],
+"ad_creative_ec1108c9-24a1-46f4-ab40-201285e6ca96.jpg":["Emulait","Baby & Kids","Story (Vertical)"],
+"ad_creative_ec2cb4d6-53cb-46a8-9d17-1efc2a72ff21.jpg":["SaunaBox","Health & Wellness","Square"],
+"ad_creative_ed6bd2cd-c7eb-48a4-b0ab-d53a56067000.jpg":["Kora Organics","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_edd60830-b755-4eb9-b9bb-5ef05415b90b.jpg":["BruMate","Home & Appliances","Story (Vertical)"],
+"ad_creative_ee080a96-8098-4554-bf84-fa86dff1f01b.jpg":["Snif","Home & Appliances","Square"],
+"ad_creative_f03380da-61a6-42a2-8ce7-ff69c54872db.jpg":["KatKin","Pet","Square"],
+"ad_creative_f1921561-ad98-41ec-ad80-52b8a600d9e5.jpg":["Unknown","Baby & Kids","Story (Vertical)"],
+"ad_creative_f21c5e4a-9083-4452-ba7c-5371811a290c.jpg":["Withings","Tech & Electronics","Story (Vertical)"],
+"ad_creative_f2bf108c-4b3c-4b9d-af64-0935d88e4e1a.jpg":["Hilma","Supplements & Vitamins","Square"],
+"ad_creative_f33ad1d2-38c5-4f06-91c7-4a5a2a1caa69.jpg":["Loftie","Home & Appliances","Square"],
+"ad_creative_f34d1ba5-944c-4d74-a69d-996ca82ba0c2.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_f34e3871-13a2-4ac3-8e5c-389ee4ade6c1.jpg":["Bodied","Food & Beverage","Square"],
+"ad_creative_f360c60a-9192-4ba7-905b-260584aa07b6.jpg":["Pet-Pourri","Pet","Story (Vertical)"],
+"ad_creative_f3a76532-68eb-45cb-87b8-4c65afb268e1.jpg":["JSHealth","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_f3ee1aeb-44c6-4e53-8256-aff178b99453.jpg":["AgeMate","Supplements & Vitamins","Square"],
+"ad_creative_f477a0f4-a103-4fdc-bc32-245c15eaa6c4.jpg":["Wildling","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_f4ee6e67-7bc8-4d75-8cb3-9ea2315d947d.jpg":["Cheeky","Oral Care","Story (Vertical)"],
+"ad_creative_f51c117a-0252-4732-9300-0768b37d4077.jpg":["Cymbiotika","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_f535a5da-5386-4e57-be22-f0a2de4040dc.jpg":["Once Upon a Farm","Baby & Kids","Story (Vertical)"],
+"ad_creative_f5650445-4926-42a0-86a0-02f236baceeb.jpg":["Cuure","Supplements & Vitamins","Square"],
+"ad_creative_f5e868db-4819-4587-9a78-92690039b576.jpg":["Sprints","Fitness & Equipment","Story (Vertical)"],
+"ad_creative_f65abd04-e8df-4ec3-9554-91c2be2f8e4c.jpg":["Nodiee","Baby & Kids","Square"],
+"ad_creative_f67be03f-4c2f-42e5-a107-c50d91288264.jpg":["Lifeboost Coffee","Food & Beverage","Story (Vertical)"],
+"ad_creative_f7377ea8-27d2-4470-b27a-2ab7df065c69.jpg":["Ilia","Skincare & Beauty","Square"],
+"ad_creative_f77269dc-40e5-4cfe-be6d-28c1c5befe77.jpg":["DIRTEA","Food & Beverage","Square"],
+"ad_creative_f784ad23-17cb-4824-ad23-404f934ce747.jpg":["UPPAbaby","Baby & Kids","Story (Vertical)"],
+"ad_creative_f8ad15d1-4530-4b31-b150-1062eb3d1cee.jpg":["Unknown","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_f9347064-3f55-4f47-9b28-be704a3558ca.jpg":["Catalyst","Pet","Square"],
+"ad_creative_f9803de3-df5c-4691-a5b5-19e94a4af8d6.jpg":["KatKin","Pet","Square"],
+"ad_creative_f9b4a3a4-20f4-47a9-95cf-43ca6e2ec561.jpg":["Cuure","Supplements & Vitamins","Square"],
+"ad_creative_fa539697-bdc6-41ac-b942-3ad79f96ae46.jpg":["Newton","Baby & Kids","Story (Vertical)"],
+"ad_creative_fa6913ca-f9eb-4e74-8933-215eca5723cc.jpg":["Moon Juice","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_fad90237-c872-4179-978c-a20b12b0411a.jpg":["MuscleTech","Supplements & Vitamins","Square"],
+"ad_creative_fb1324c2-bc34-44cd-a436-1450c984a84e.jpg":["Ember","Tech & Electronics","Story (Vertical)"],
+"ad_creative_fb4c33a3-4820-487f-b0e9-a6728474ca4b.jpg":["Cymbiotika","Supplements & Vitamins","Square"],
+"ad_creative_fb6a9ef8-f31c-4a3e-95f4-6b38f971a86d.jpg":["Hers","Hair Care","Story (Vertical)"],
+"ad_creative_fbcf11c4-7446-4f0c-8a0e-dcf6134c937f.jpg":["AG1","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_fbe40b04-2524-49f4-bf13-56dd3f1cf98a.jpg":["The Conscious Bar","Food & Beverage","Square"],
+"ad_creative_fc1f33c4-24c8-44fc-9b2a-494a84840019.jpg":["Humantra","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_fc71fcda-da76-4dbf-b00f-cba59eede353.jpg":["Lifeboost Coffee","Food & Beverage","Square"],
+"ad_creative_fcbd0d57-b003-44ea-8cee-d883a26042e8.jpg":["Roam","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_fe361054-5fba-4541-827f-52ee99cba7dc.jpg":["Guava Family","Baby & Kids","Story (Vertical)"],
+"ad_creative_ff63ae15-dac3-431f-b4f6-0650a9094561.jpg":["Unknown","Skincare & Beauty","Story (Vertical)"],
+"ad_creative_ffab78f5-7d38-407d-b2b6-e13c15cd151e.jpg":["Phizz","Supplements & Vitamins","Story (Vertical)"],
+"ad_creative_ffd13cee-691b-43c3-b8d6-3fd4b8418ae1.jpg":["Nutrafol","Hair Care","Story (Vertical)"]
+  };
+
+  const FAV_KEY = "inspo_favs_v1";
+  let favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"));
+  function saveFavs() { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); }
+
+  const gallery = document.getElementById("gallery");
+  const countEl = document.getElementById("count");
+  const emptyEl = document.getElementById("empty");
+  let view = "all"; // all | fav
+
+  // Build cards
+  const cards = IMAGES.map((src, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.index = i;
+
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.src = src;
+    img.alt = "Creative " + (i + 1);
+    img.addEventListener("click", () => openLightbox(i));
+    card.appendChild(img);
+
+    const star = document.createElement("button");
+    star.className = "star" + (favs.has(src) ? " starred" : "");
+    star.textContent = favs.has(src) ? "★" : "☆";
+    star.title = "Save to favorites";
+    star.addEventListener("click", (e) => { e.stopPropagation(); toggleFav(i); });
+    card.appendChild(star);
+
+    const meta = META[src] || ["Unknown", "Other", "Square"];
+    const cap = document.createElement("div");
+    cap.className = "caption";
+    cap.innerHTML = '<div class="b"></div><div class="c"></div>';
+    cap.querySelector(".b").textContent = meta[0] === "Unknown" ? "Unknown brand" : meta[0];
+    cap.querySelector(".c").textContent = meta[1];
+    card.appendChild(cap);
+
+    gallery.appendChild(card);
+    return { src, card, star, img, brand: meta[0], category: meta[1], format: meta[2] };
+  });
+
+  // Filter state
+  let fCategory = "all", fBrand = "all", fFormat = "all";
+  const catSel = document.getElementById("fCategory");
+  const brandSel = document.getElementById("fBrand");
+  const resetBtn = document.getElementById("resetFilters");
+
+  function populateSelect(sel, values, allLabel) {
+    sel.innerHTML = "";
+    const optAll = document.createElement("option");
+    optAll.value = "all"; optAll.textContent = allLabel;
+    sel.appendChild(optAll);
+    values.forEach(v => {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+  }
+  const counts = (key) => {
+    const c = {};
+    cards.forEach(card => { c[card[key]] = (c[card[key]] || 0) + 1; });
+    return c;
+  };
+  const catCounts = counts("category");
+  const brandCounts = counts("brand");
+  const categories = Object.keys(catCounts).sort((a, b) => catCounts[b] - catCounts[a]);
+  const brands = Object.keys(brandCounts).sort((a, b) => {
+    if (a === "Unknown") return 1;
+    if (b === "Unknown") return -1;
+    return a.localeCompare(b);
+  });
+  populateSelect(catSel, categories.map(c => `${c} (${catCounts[c]})`), `All categories (${cards.length})`);
+  populateSelect(brandSel, brands.map(b => `${b} (${brandCounts[b]})`), `All brands (${new Set(cards.map(c => c.brand)).size})`);
+  // map display label back to raw value
+  const catLabelToVal = {}; categories.forEach(c => catLabelToVal[`${c} (${catCounts[c]})`] = c);
+  const brandLabelToVal = {}; brands.forEach(b => brandLabelToVal[`${b} (${brandCounts[b]})`] = b);
+
+  function toggleFav(i) {
+    const { src, star } = cards[i];
+    if (favs.has(src)) favs.delete(src); else favs.add(src);
+    const on = favs.has(src);
+    star.classList.toggle("starred", on);
+    star.textContent = on ? "★" : "☆";
+    saveFavs();
+    if (view === "fav") applyView();
+    if (lbIndex === i) syncLbStar();
+    updateCount();
+  }
+
+  let shownCount = 0;
+  function applyView() {
+    let shown = 0;
+    cards.forEach((c) => {
+      const visible =
+        (view === "all" || favs.has(c.src)) &&
+        (fCategory === "all" || c.category === fCategory) &&
+        (fBrand === "all" || c.brand === fBrand) &&
+        (fFormat === "all" || c.format === fFormat);
+      c.card.classList.toggle("hidden", !visible);
+      if (visible) shown++;
+    });
+    shownCount = shown;
+    emptyEl.style.display = shown === 0 ? "block" : "none";
+    emptyEl.textContent = (view === "fav" && favs.size === 0)
+      ? "No favorites yet — hover an image and click the ★ to save it here."
+      : "No creatives match these filters.";
+    gallery.style.display = shown === 0 ? "none" : "";
+    resetBtn.style.display = (fCategory !== "all" || fBrand !== "all" || fFormat !== "all") ? "" : "none";
+    updateCount();
+  }
+
+  function updateCount() {
+    const total = IMAGES.length;
+    const favCount = favs.size;
+    const filtered = fCategory !== "all" || fBrand !== "all" || fFormat !== "all";
+    if (view === "fav") {
+      countEl.textContent = filtered
+        ? shownCount + " of " + favCount + " favorites"
+        : favCount + " favorite" + (favCount === 1 ? "" : "s");
+    } else {
+      countEl.textContent = filtered
+        ? shownCount + " of " + total + " creatives"
+        : total + " creatives · " + favCount + " favorited";
+    }
+  }
+
+  // View toggle
+  document.getElementById("viewToggle").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    view = btn.dataset.view;
+    [...e.currentTarget.children].forEach(b => b.classList.toggle("active", b === btn));
+    applyView();
+  });
+
+  // Category / brand filters
+  catSel.addEventListener("change", (e) => {
+    fCategory = catLabelToVal[e.target.value] || "all";
+    applyView();
+  });
+  brandSel.addEventListener("change", (e) => {
+    fBrand = brandLabelToVal[e.target.value] || "all";
+    applyView();
+  });
+  // Format toggle
+  document.getElementById("fFormat").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    fFormat = btn.dataset.format;
+    [...e.currentTarget.children].forEach(b => b.classList.toggle("active", b === btn));
+    applyView();
+  });
+  // Reset filters
+  resetBtn.addEventListener("click", () => {
+    fCategory = fBrand = fFormat = "all";
+    catSel.value = "all";
+    brandSel.value = "all";
+    [...document.getElementById("fFormat").children].forEach(b =>
+      b.classList.toggle("active", b.dataset.format === "all"));
+    applyView();
+  });
+
+  // Column density
+  document.getElementById("cols").addEventListener("input", (e) => {
+    document.documentElement.style.setProperty("--cols", e.target.value);
+  });
+
+  // Lightbox
+  const lb = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lbImg");
+  const lbPos = document.getElementById("lbPos");
+  const lbStar = document.getElementById("lbStar");
+  const lbDownload = document.getElementById("lbDownload");
+  let lbIndex = -1;
+
+  function visibleIndices() {
+    return cards.map((c, i) => i).filter(i => !cards[i].card.classList.contains("hidden"));
+  }
+
+  function openLightbox(i) {
+    lbIndex = i;
+    const { src } = cards[i];
+    lbImg.src = src;
+    lbDownload.href = src;
+    lbDownload.setAttribute("download", src);
+    const vis = visibleIndices();
+    lbPos.textContent = (vis.indexOf(i) + 1) + " / " + vis.length;
+    syncLbStar();
+    lb.classList.add("open");
+  }
+  function syncLbStar() {
+    const on = favs.has(cards[lbIndex].src);
+    lbStar.textContent = on ? "★ Favorited" : "☆ Favorite";
+    lbStar.classList.toggle("starred", on);
+  }
+  function closeLightbox() { lb.classList.remove("open"); lbIndex = -1; }
+  function step(dir) {
+    const vis = visibleIndices();
+    const pos = vis.indexOf(lbIndex);
+    if (pos === -1) return;
+    const next = (pos + dir + vis.length) % vis.length;
+    openLightbox(vis[next]);
+  }
+
+  document.getElementById("lbClose").addEventListener("click", closeLightbox);
+  document.getElementById("lbPrev").addEventListener("click", () => step(-1));
+  document.getElementById("lbNext").addEventListener("click", () => step(1));
+  lbStar.addEventListener("click", () => toggleFav(lbIndex));
+  lb.addEventListener("click", (e) => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener("keydown", (e) => {
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "ArrowRight") step(1);
+  });
+
+  applyView();
+</script>
+</body>
+</html>
